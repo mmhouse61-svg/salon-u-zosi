@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Salon u Zosi">
+<meta name="apple-mobile-web-app-title" content="Salon u Róży">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#ff8fb8">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
-<title>Salon fryzjerski u Zosi</title>
+<title>Salon u Róży</title>
 <style>
   :root {
     --rozowy: #ff8fb8;
@@ -39,14 +39,19 @@
   #start .guzik { margin: 0 0 4vh; }
 
   /* Ekran 2: klient wchodzi */
-  #klient { background: linear-gradient(#fff4f9 0 62%, #f4c9a6 62% 100%); }
+  #klient, #koniec { overflow: hidden; background: #ffc9de; }
   .tablica { position: absolute; top: 3vh; left: 50%; transform: translateX(-50%); font-size: clamp(18px, 3vw, 34px); background: #fff; border: 4px solid var(--rozowy); border-radius: 18px; padding: 0.3em 1em; }
-  #scena { position: absolute; inset: 0; }
-  #zosiaScena { position: absolute; left: 14%; bottom: 14%; width: min(34vh, 24vw); }
-  #fotel { position: absolute; left: 38%; bottom: 14%; width: min(26vh, 18vw); }
-  #gosc { --w: min(36vh, 26vw); width: var(--w); height: calc(var(--w) / 0.7692); position: absolute; bottom: 12%; left: 110%; transition: left 2.2s ease-in-out; }
-  #gosc.wszedl { left: 56%; }
-  #gosc.w-fotelu { left: 40%; transition: left 1s ease-in-out; }
+  /* salon: tło 4:3 zakotwiczone przy dole; wszystko w nim w % tła, więc postacie zawsze stoją za ladą */
+  .salon { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); width: max(100vw, 133.333vh); aspect-ratio: 1448 / 1086; }
+  .salon-tlo { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; }
+  .salon-lada { position: absolute; left: 0; bottom: 0; width: 100%; display: block; pointer-events: none; }
+  .zosia-s { position: absolute; left: 9%; bottom: 23%; height: 39%; width: auto; display: block; }
+  .salon .klient { height: auto; width: 26.4%; aspect-ratio: 650 / 845; position: absolute; bottom: 23%; }
+  #gosc { left: 110%; transition: left 2.2s ease-in-out; }
+  #gosc.wszedl { left: 57%; }
+  #gosc.w-fotelu { left: 57%; opacity: 0; transition: opacity 1s; }
+  #koniecKlient { left: 57%; }
+  .salon .kot { width: 9%; }
   #dymek {
     position: absolute; left: 50%; top: 14vh; transform: translateX(-50%); max-width: 80vw;
     background: #fff; border: 4px solid var(--rozowy); border-radius: 24px; padding: 0.5em 1em;
@@ -74,7 +79,6 @@
   .duzy { position: absolute; left: 50%; transform: translateX(-50%); }
   /* klient: ciało + włosy (canvas) + gumki, warstwami jedna na drugiej; wysokość z --h, proporcja 650:845 */
   .klient { --h: 60vh; height: var(--h); width: calc(var(--h) * 0.7692); position: relative; }
-  #gosc.klient { height: calc(var(--w) / 0.7692); width: var(--w); }
   .klient canvas, .klient img { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
   .dalej-prawo { position: absolute; right: 4vw; bottom: 4vh; font-size: clamp(22px, 4vw, 44px); display: none; }
 
@@ -100,13 +104,11 @@
 
   /* Ekran 6: finał */
   #koniec { background: linear-gradient(#fff3a8, #ffe3ef); text-align: center; overflow: hidden; }
-  #koniecKlient { top: 14vh; --h: 54vh; left: 64%; }
-  #koniecZosia { position: absolute; left: 8%; bottom: 31vh; width: min(34vh, 24vw); }
-  #nagroda { position: absolute; left: 34%; bottom: 33vh; width: min(16vh, 11vw); opacity: 0; transform: scale(.2) rotate(-30deg); transition: all .6s cubic-bezier(.2, 1.6, .4, 1); }
+  #nagroda { position: absolute; left: 40%; bottom: 40%; width: 10%; opacity: 0; transform: scale(.2) rotate(-30deg); transition: all .6s cubic-bezier(.2, 1.6, .4, 1); }
   #nagroda.pokaz { opacity: 1; transform: none; }
   #nagroda img { width: 100%; display: block; }
   #fartuszekGwiazdka { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -30%); font-size: clamp(24px, 4vw, 48px); display: none; }
-  #gwiazdki { position: absolute; top: 3vh; left: 50%; transform: translateX(-50%); font-size: clamp(40px, 8vw, 90px); letter-spacing: .1em; white-space: nowrap; }
+  #gwiazdki { position: absolute; top: 2vh; left: 50%; transform: translateX(-50%); font-size: clamp(40px, 8vw, 90px); letter-spacing: .1em; white-space: nowrap; }
   #gwiazdki span { display: inline-block; opacity: .25; filter: grayscale(1); transition: all .4s; }
   #gwiazdki span.jest { opacity: 1; filter: none; animation: skok .6s; }
   @keyframes skok { 0% { transform: scale(.2) rotate(-90deg); } 70% { transform: scale(1.4); } 100% { transform: scale(1); } }
@@ -129,26 +131,22 @@
 
 <!-- EKRAN 1: START -->
 <section id="start" class="ekran aktywny">
-  <h1>Salon fryzjerski<br>u Zosi</h1>
-  <div class="podtytul">w centrum Poznania</div>
+  <h1>Salon<br>u Róży</h1>
+  <div class="podtytul">salon fryzjerski w centrum Poznania</div>
   <img class="zosia" src="img/zosia.webp" alt="Zosia fryzjerka">
   <button class="guzik" id="graj">▶ Graj</button>
 </section>
 
 <!-- EKRAN 2: KLIENT WCHODZI -->
 <section id="klient" class="ekran">
-  <div class="tablica">Salon u Zosi</div>
-  <div id="scena">
-    <img id="zosiaScena" src="img/zosia.webp" alt="Zosia">
-    <svg id="fotel" viewBox="0 0 160 200">
-      <rect x="40" y="60" width="80" height="90" rx="22" fill="#e0527f"/>
-      <rect x="25" y="110" width="110" height="38" rx="14" fill="#ff7aa5"/>
-      <rect x="72" y="148" width="16" height="30" fill="#8a8a99"/>
-      <ellipse cx="80" cy="184" rx="48" ry="10" fill="#8a8a99"/>
-    </svg>
+  <div class="salon">
+    <img class="salon-tlo" src="img/tlo-salonu.webp" alt="">
+    <img id="zosiaScena" class="zosia-s" src="img/zosia.webp" alt="Zosia">
     <div id="gosc" class="klient"></div>
-    <div class="kot" style="left:3%;bottom:5%"></div>
+    <img class="salon-lada" src="img/lada.webp" alt="">
+    <div class="kot" style="left:44%;bottom:30%"></div>
   </div>
+  <div class="tablica">Salon u Róży</div>
   <div id="dymek"></div>
   <button class="guzik" id="dalej">Dalej ➜</button>
 </section>
@@ -183,11 +181,15 @@
 
 <!-- EKRAN 6: ZADOWOLONY KLIENT + GWIAZDKI + FARTUSZEK -->
 <section id="koniec" class="ekran">
+  <div class="salon">
+    <img class="salon-tlo" src="img/tlo-salonu.webp" alt="">
+    <img id="koniecZosia" class="zosia-s" src="img/zosia.webp" alt="Zosia">
+    <div id="koniecKlient" class="klient"></div>
+    <img class="salon-lada" src="img/lada.webp" alt="">
+    <div id="nagroda"><img id="fartuszekImg" src="img/fartuszek.webp" alt="nowy fartuszek"><span id="fartuszekGwiazdka">⭐</span></div>
+    <div class="kot" style="left:44%;bottom:30%"></div>
+  </div>
   <div id="gwiazdki"><span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span></div>
-  <img id="koniecZosia" src="img/zosia.webp" alt="Zosia">
-  <div id="nagroda"><img id="fartuszekImg" src="img/fartuszek.webp" alt="nowy fartuszek"><span id="fartuszekGwiazdka">⭐</span></div>
-  <div id="koniecKlient" class="duzy klient"></div>
-  <div class="kot" style="left:88%;bottom:5%"></div>
   <div id="napisKoniec"></div>
   <button class="guzik" id="nastepny">Następny klient ➜</button>
 </section>
