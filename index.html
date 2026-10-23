@@ -293,7 +293,9 @@ function postac({ skora, wlosy, ubranie, fryzura, wlosyKolor, oko = '#5a3a22', r
     <circle cx="51" cy="232" r="11" fill="${skora}" stroke="${sc}" stroke-width="2.5"/>
     <circle cx="149" cy="232" r="11" fill="${skora}" stroke="${sc}" stroke-width="2.5"/>
     <!-- szyja i tułów -->
-    <rect x="88" y="132" width="24" height="32" rx="9" fill="${sc}"/>
+    <path d="M85 130 L85 152 Q85 162 78 166 L122 166 Q115 162 115 152 L115 130Z" fill="${skora}"/>
+    <path d="M85 132 L85 152 Q85 162 78 166 M115 132 L115 152 Q115 162 122 166" stroke="${sc}" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M86 146 Q100 160 114 146 L114 138 L86 138Z" fill="${sc}" opacity=".55"/>
     <path d="M56 254 Q54 170 100 162 Q146 170 144 254Z" fill="${ubranie}" stroke="${uc}" stroke-width="3" stroke-linejoin="round"/>
     <path d="M84 164 L100 184 L116 164 Q100 170 84 164Z" fill="#fff" opacity=".92"/>
     <circle cx="100" cy="204" r="3.5" fill="${uc}"/><circle cx="100" cy="226" r="3.5" fill="${uc}"/>
