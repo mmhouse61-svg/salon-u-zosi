@@ -127,6 +127,7 @@
   .kot.skok { animation: kotSkok .5s; }
   @keyframes kotSkok { 40% { transform: translateY(-5vh) rotate(-8deg); } }
   .kot .ozdoba { position: absolute; left: 45%; top: -10%; transform: translateX(-50%); font-size: calc(max(100vw, 133.333vh) * 0.04); line-height: 1; pointer-events: none; }
+  #zyczenie { position: fixed; top: 11vh; left: 2vw; z-index: 10; max-width: 46vw; font-size: clamp(16px, 2.6vw, 30px); font-weight: bold; background: #fff; border: 3px solid #b06be0; border-radius: 18px; padding: .2em .7em; display: none; }
   #monety { position: fixed; top: 2vh; right: 2vw; z-index: 10; font-size: clamp(22px, 3.6vw, 40px); font-weight: bold; background: #fff; border: 3px solid #f2b705; border-radius: 999px; padding: .15em .7em; display: none; }
   #monety.skok { animation: kotSkok .5s; }
   .guzik.maly { font-size: clamp(18px, 3vw, 32px); background: #f2b705; box-shadow: 0 6px 0 #c28f00; }
@@ -230,6 +231,7 @@
 </section>
 
 <div id="miau">Miau! 🐾</div>
+<div id="zyczenie"></div>
 <div id="monety">🪙 <span id="monetyLiczba">0</span></div>
 <button id="dzwiekBtn" title="Dźwięk">🔊</button>
 
@@ -471,6 +473,16 @@ const $ = id => document.getElementById(id);
 function pokaz(id) {
   document.querySelectorAll('.ekran').forEach(e => e.classList.remove('aktywny'));
   $(id).classList.add('aktywny');
+  const z = $('zyczenie');
+  z.style.display = aktualnyKlient && aktualnyKlient.zyczenie && ['klient', 'farbowanie', 'fryzura'].includes(id) ? 'block' : 'none';
+}
+// życzenie klienta: kolor + fryzura; spełnione = bonusowe monety
+const NAZWY_KOLOROW = ['czerwone', 'pomarańczowe', 'żółte', 'zielone', 'niebieskie', 'fioletowe', 'różowe', 'czarne', 'brązowe', 'białe'];
+const NAZWY_STYLI = { krotkie: 'krótkie', dlugie: 'długie', kucyki: 'kucyki', kok: 'kok', warkocze: 'warkocze', irokez: 'irokez' };
+function losujZyczenie() {
+  const i = Math.floor(Math.random() * KOLORY.length);
+  const styl = FRYZURY_IMG[Math.floor(Math.random() * FRYZURY_IMG.length)];
+  return { kolor: KOLORY[i], nazwaKoloru: NAZWY_KOLOROW[i], styl, nazwaStylu: NAZWY_STYLI[styl] };
 }
 
 let aktualnyKlient = null;
@@ -479,6 +491,9 @@ function nowyKlient() {
   const wzor = KLIENCI[Math.floor(Math.random() * KLIENCI.length)];
   aktualnyKlient = { ...wzor, opis: { ...wzor.opis } };   // kopia, żeby farbowanie nie psuło wzoru
   stan = { kolor: false, fryzura: false, robot: false };
+  aktualnyKlient.zyczenie = losujZyczenie();
+  $('zyczenie').textContent = '💭 Chcę: ' + aktualnyKlient.zyczenie.nazwaKoloru + ', ' + aktualnyKlient.zyczenie.nazwaStylu;
+  $('zyczenie').style.display = 'none';
   setTimeout(() => Dzwiek.dzwonek(), 300);
   const g = $('gosc');
   g.className = 'klient';
@@ -489,10 +504,13 @@ function nowyKlient() {
   void g.offsetWidth;
   g.classList.add('wszedl');
   setTimeout(() => {
-    $('dymek').textContent = aktualnyKlient.imie + ': ' + aktualnyKlient.tekst;
+    const zy = aktualnyKlient.zyczenie;
+    const tekst = aktualnyKlient.tekst + ' Chcę ' + zy.nazwaKoloru + ' włosy i ' + zy.nazwaStylu + '!';
+    $('dymek').textContent = aktualnyKlient.imie + ': ' + tekst;
     $('dymek').classList.add('widoczny');
     $('dalej').className = 'guzik widoczny';
-    mow(aktualnyKlient.tekst);
+    $('zyczenie').style.display = 'block';
+    mow(tekst);
   }, 2400);
 }
 
@@ -692,14 +710,17 @@ function startKoniec() {
   // nowy fartuszek dla Zosi (4 gwiazdki = złota gwiazdka)
   fartuszek.nr = (fartuszek.nr + 1) % FARTUSZEK_ODCIEN.length;
   fartuszek.gwiazdka = gwiazdy === 4;
-  const zarobek = gwiazdy * 2;
+  const zy = aktualnyKlient.zyczenie, o = aktualnyKlient.opis;
+  const trafKolor = o.kolor === zy.kolor, trafStyl = o.styl === zy.styl;
+  const bonus = (trafKolor ? 3 : 0) + (trafStyl ? 3 : 0);
+  const zarobek = gwiazdy * 2 + bonus;
   zapis.monety += zarobek; zapis.fartuszek = fartuszek.nr; zapisz();
   const nag = $('nagroda');
   nag.classList.remove('pokaz'); void nag.offsetWidth;
   $('fartuszekImg').style.filter = 'hue-rotate(' + FARTUSZEK_ODCIEN[fartuszek.nr] + 'deg)';
   $('fartuszekGwiazdka').style.display = fartuszek.gwiazdka ? 'block' : 'none';
   setTimeout(() => nag.classList.add('pokaz'), 500 + gwiazdy * 600);
-  $('napisKoniec').innerHTML = aktualnyKlient.imie + ': „Super! Dziękuję!” 😍 Zosia dostaje <b>nowy fartuszek</b>! 👗<br>Fryzura jedzie na <b>Konkurs Fryzur w Poznaniu</b> 🏆<br>Napiwek: <b>+' + zarobek + ' 🪙</b>';
+  $('napisKoniec').innerHTML = aktualnyKlient.imie + ': „Super! Dziękuję!” 😍 Zosia dostaje <b>nowy fartuszek</b>! 👗<br>Fryzura jedzie na <b>Konkurs Fryzur w Poznaniu</b> 🏆<br>' + (bonus ? '💝 Spełnione życzenie: ' + [trafKolor ? zy.nazwaKoloru : '', trafStyl ? zy.nazwaStylu : ''].filter(Boolean).join(' i ') + '! ' : 'Życzenie: ' + zy.nazwaKoloru + ', ' + zy.nazwaStylu + '. ') + 'Napiwek: <b>+' + zarobek + ' 🪙</b>';
   setTimeout(() => {
     Dzwiek.fanfara(); mow('Super! Dziękuję!');
     odswiezMonety(); $('monety').classList.remove('skok'); void $('monety').offsetWidth; $('monety').classList.add('skok');
