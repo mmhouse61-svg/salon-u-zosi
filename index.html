@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Salon fryzjerski u Zosi</title>
+<style>
+  :root {
+    --rozowy: #ff8fb8;
+    --jasny: #ffe3ef;
+    --mietowy: #bdeedd;
+    --tekst: #5a2a47;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--jasny); font-family: "Trebuchet MS", system-ui, sans-serif; color: var(--tekst); }
+  .ekran { position: absolute; inset: 0; display: none; }
+  .ekran.aktywny { display: block; }
+
+  /* Ekran 1: start */
+  #start { background: linear-gradient(var(--jasny), #ffc9de); text-align: center; }
+  #start h1 { margin: 8vh 0 0; font-size: clamp(36px, 7vw, 84px); line-height: 1.1; }
+  #start .podtytul { font-size: clamp(18px, 3vw, 32px); margin-top: 1vh; }
+  #start svg.zosia { width: min(38vh, 60vw); margin-top: 3vh; }
+  .guzik {
+    display: inline-block; border: 0; border-radius: 999px; background: var(--rozowy); color: #fff;
+    font: inherit; font-weight: bold; font-size: clamp(28px, 5vw, 56px);
+    padding: 0.35em 1.4em; box-shadow: 0 8px 0 #d85c8c; cursor: pointer;
+  }
+  .guzik:active { transform: translateY(6px); box-shadow: 0 2px 0 #d85c8c; }
+  #start .guzik { margin-top: 3vh; }
+
+  /* Ekran 2: klient wchodzi */
+  #klient { background: linear-gradient(#fff4f9 0 62%, #f4c9a6 62% 100%); }
+  .tablica { position: absolute; top: 3vh; left: 50%; transform: translateX(-50%); font-size: clamp(18px, 3vw, 34px); background: #fff; border: 4px solid var(--rozowy); border-radius: 18px; padding: 0.3em 1em; }
+  #scena { position: absolute; inset: 0; }
+  #zosiaScena { position: absolute; left: 14%; bottom: 14%; width: min(30vh, 22vw); }
+  #fotel { position: absolute; left: 38%; bottom: 14%; width: min(26vh, 18vw); }
+  #gosc { position: absolute; bottom: 14%; width: min(30vh, 22vw); left: 110%; transition: left 2.2s ease-in-out; }
+  #gosc.wszedl { left: 56%; }
+  #gosc.w-fotelu { left: 40%; transition: left 1s ease-in-out; }
+  #dymek {
+    position: absolute; left: 50%; top: 14vh; transform: translateX(-50%); max-width: 80vw;
+    background: #fff; border: 4px solid var(--rozowy); border-radius: 24px; padding: 0.5em 1em;
+    font-size: clamp(20px, 3.4vw, 40px); text-align: center; opacity: 0; transition: opacity .4s;
+  }
+  #dymek.widoczny { opacity: 1; }
+  #dalej { position: absolute; right: 4vw; bottom: 4vh; display: none; font-size: clamp(22px, 4vw, 44px); }
+  #dalej.widoczny { display: inline-block; }
+
+  /* Ekran 3: placeholder */
+  #mycie { background: linear-gradient(var(--mietowy), #e8fbf4); touch-action: none; text-align: center; }
+  #mycie .instrukcja { position: absolute; top: 3vh; left: 50%; transform: translateX(-50%); font-size: clamp(18px, 3vw, 34px); background: #fff; border: 4px solid #5bc8a8; border-radius: 18px; padding: 0.3em 1em; white-space: nowrap; }
+  #mycieKlient { position: absolute; left: 50%; top: 52%; transform: translate(-50%, -50%); height: 78vh; max-width: 90vw; }
+  #piana { position: absolute; left: 50%; top: 52%; transform: translate(-50%, -50%); height: 78vh; max-width: 90vw; pointer-events: none; }
+  #pasek { position: absolute; left: 4vw; bottom: 4vh; width: 30vw; height: 3.5vh; background: #fff; border: 4px solid #5bc8a8; border-radius: 999px; overflow: hidden; }
+  #pasek div { height: 100%; width: 0; background: #5bc8a8; transition: width .15s; }
+  #prysznic { position: absolute; font-size: clamp(60px, 11vw, 120px); transform: translate(-50%, -100%); pointer-events: none; display: none; }
+  .kropla { position: absolute; width: 10px; height: 18px; background: #4aa8ff; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; pointer-events: none; animation: spada .45s linear forwards; }
+  @keyframes spada { from { transform: translateY(0); opacity: 1; } to { transform: translateY(var(--spadek)); opacity: .2; } }
+  #czysto { position: absolute; left: 50%; top: 14vh; transform: translateX(-50%); font-size: clamp(32px, 6vw, 70px); display: none; }
+  #dalejMycie { position: absolute; right: 4vw; bottom: 4vh; display: none; font-size: clamp(22px, 4vw, 44px); }
+
+  /* wspólne dla ekranów 4-6 */
+  .instr { position: absolute; top: 3vh; left: 50%; transform: translateX(-50%); font-size: clamp(18px, 3vw, 34px); background: #fff; border: 4px solid var(--rozowy); border-radius: 18px; padding: 0.3em 1em; text-align: center; max-width: 92vw; }
+  .duzy { position: absolute; left: 50%; transform: translateX(-50%); }
+  .dalej-prawo { position: absolute; right: 4vw; bottom: 4vh; font-size: clamp(22px, 4vw, 44px); display: none; }
+
+  /* Ekran 4: farbowanie */
+  #farbowanie { background: linear-gradient(#f3e1ff, #fbeeff); }
+  #farbaKlient { top: 12vh; height: 62vh; }
+  #paleta { position: absolute; left: 50%; bottom: 4vh; transform: translateX(-50%); display: flex; gap: 2vw; flex-wrap: wrap; justify-content: center; width: 70vw; }
+  .kolor { width: clamp(44px, 7vw, 80px); height: clamp(44px, 7vw, 80px); border-radius: 50%; border: 5px solid #fff; box-shadow: 0 4px 0 rgba(0,0,0,.2); cursor: pointer; }
+  .kolor:active { transform: scale(.9); }
+  .kolor.wybrany { outline: 5px solid var(--tekst); }
+
+  /* Ekran 5: fryzura + suszarko-robot */
+  #fryzura { background: linear-gradient(#e3f2ff, #f4faff); }
+  #fryzuraKlient { top: 12vh; height: 56vh; left: 38%; }
+  #robot { position: absolute; right: 8vw; top: 24vh; font-size: clamp(80px, 16vw, 180px); cursor: pointer; text-align: center; line-height: 1; }
+  #robot small { display: block; font-size: clamp(16px, 2.4vw, 28px); background: #fff; border-radius: 14px; padding: .2em .6em; margin-top: .3em; }
+  #robot.zepsuty { animation: trzes .25s infinite; }
+  @keyframes trzes { 0%,100% { transform: translateX(-4px) rotate(-3deg); } 50% { transform: translateX(4px) rotate(3deg); } }
+  #opcjeFryzur { position: absolute; left: 50%; bottom: 4vh; transform: translateX(-50%); display: none; gap: 1.5vw; flex-wrap: wrap; justify-content: center; width: 78vw; }
+  .opcja { border: 0; border-radius: 22px; background: #fff; border: 4px solid #6bb8ff; font: inherit; font-weight: bold; font-size: clamp(16px, 2.6vw, 30px); padding: .5em .9em; color: var(--tekst); cursor: pointer; }
+  .opcja:active { transform: scale(.94); }
+  .opcja.wybrany { background: #6bb8ff; color: #fff; }
+
+  /* Ekran 6: finał */
+  #koniec { background: linear-gradient(#fff3a8, #ffe3ef); text-align: center; overflow: hidden; }
+  #koniecKlient { top: 20vh; height: 52vh; left: 56%; }
+  #koniecZosia { position: absolute; left: 12%; bottom: 8vh; width: min(32vh, 22vw); }
+  #gwiazdki { position: absolute; top: 12vh; left: 50%; transform: translateX(-50%); font-size: clamp(40px, 8vw, 90px); letter-spacing: .1em; white-space: nowrap; }
+  #gwiazdki span { display: inline-block; opacity: .25; filter: grayscale(1); transition: all .4s; }
+  #gwiazdki span.jest { opacity: 1; filter: none; animation: skok .6s; }
+  @keyframes skok { 0% { transform: scale(.2) rotate(-90deg); } 70% { transform: scale(1.4); } 100% { transform: scale(1); } }
+  #napisKoniec { position: absolute; left: 50%; bottom: 14vh; transform: translateX(-50%); width: 92vw; font-size: clamp(20px, 3.4vw, 40px); background: #fff; border: 4px solid var(--rozowy); border-radius: 22px; padding: .5em 1em; }
+  #nastepny { position: absolute; left: 50%; bottom: 3vh; transform: translateX(-50%); font-size: clamp(22px, 4vw, 44px); white-space: nowrap; }
+  .konfetti { position: absolute; top: -10vh; font-size: clamp(24px, 4vw, 48px); animation: leci 4s linear infinite; pointer-events: none; }
+  @keyframes leci { to { transform: translateY(115vh) rotate(360deg); } }
+
+  #dzwiekBtn { position: fixed; top: 2vh; left: 2vw; z-index: 10; font-size: clamp(24px, 4vw, 40px); background: #fff; border: 3px solid var(--rozowy); border-radius: 50%; width: 1.6em; height: 1.6em; line-height: 1; padding: 0; cursor: pointer; }
+
+  /* zwierzak w salonie */
+  .kot { position: absolute; width: min(16vh, 12vw); cursor: pointer; }
+  .kot.skok { animation: kotSkok .5s; }
+  @keyframes kotSkok { 40% { transform: translateY(-5vh) rotate(-8deg); } }
+  #miau { position: absolute; font-size: clamp(18px, 2.6vw, 30px); background: #fff; border: 3px solid var(--rozowy); border-radius: 14px; padding: .1em .5em; display: none; pointer-events: none; }
+</style>
+</head>
+<body>
+
+<!-- EKRAN 1: START -->
+<section id="start" class="ekran aktywny">
+  <h1>Salon fryzjerski<br>u Zosi</h1>
+  <div class="podtytul">w centrum Poznania</div>
+  <svg class="zosia" viewBox="0 0 200 260" aria-label="Zosia fryzjerka" data-zosia></svg>
+  <br>
+  <button class="guzik" id="graj">▶ Graj</button>
+</section>
+
+<!-- EKRAN 2: KLIENT WCHODZI -->
+<section id="klient" class="ekran">
+  <div class="tablica">Salon u Zosi</div>
+  <div id="scena">
+    <svg id="zosiaScena" viewBox="0 0 200 260" data-zosia></svg>
+    <svg id="fotel" viewBox="0 0 160 200">
+      <rect x="40" y="60" width="80" height="90" rx="22" fill="#e0527f"/>
+      <rect x="25" y="110" width="110" height="38" rx="14" fill="#ff7aa5"/>
+      <rect x="72" y="148" width="16" height="30" fill="#8a8a99"/>
+      <ellipse cx="80" cy="184" rx="48" ry="10" fill="#8a8a99"/>
+    </svg>
+    <svg id="gosc" viewBox="0 0 200 260"></svg>
+    <div class="kot" style="left:3%;bottom:5%"></div>
+  </div>
+  <div id="dymek"></div>
+  <button class="guzik" id="dalej">Dalej ➜</button>
+</section>
+
+<!-- EKRAN 3: MYCIE -->
+<section id="mycie" class="ekran">
+  <div class="instrukcja">Przeciągaj prysznic po włosach, żeby zmyć pianę!</div>
+  <svg id="mycieKlient" viewBox="0 0 200 260"></svg>
+  <svg id="piana" viewBox="0 0 200 260"></svg>
+  <div id="pasek"><div></div></div>
+  <div id="prysznic">🚿</div>
+  <div id="czysto">Czyściutko! ✨</div>
+  <button class="guzik" id="dalejMycie">Dalej ➜</button>
+</section>
+
+<!-- EKRAN 4: FARBOWANIE -->
+<section id="farbowanie" class="ekran">
+  <div class="instr" id="instrFarba">Wybierz kolor włosów! 🎨</div>
+  <svg id="farbaKlient" class="duzy" viewBox="0 0 200 260"></svg>
+  <div id="paleta"></div>
+  <button class="guzik dalej-prawo" id="dalejFarba">Dalej ➜</button>
+</section>
+
+<!-- EKRAN 5: FRYZURA + SUSZARKO-ROBOT -->
+<section id="fryzura" class="ekran">
+  <div class="instr" id="instrFryzura">Suszarko-robot się zepsuł! Stuknij go 3 razy 🔧</div>
+  <svg id="fryzuraKlient" class="duzy" viewBox="0 0 200 260"></svg>
+  <div id="robot" class="zepsuty">🤖<small id="robotNapis">⚡ bzzzt... ⚡</small></div>
+  <div id="opcjeFryzur"></div>
+  <button class="guzik dalej-prawo" id="dalejFryzura">Gotowe ➜</button>
+</section>
+
+<!-- EKRAN 6: ZADOWOLONY KLIENT + GWIAZDKI + FARTUSZEK -->
+<section id="koniec" class="ekran">
+  <div id="gwiazdki"><span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span></div>
+  <svg id="koniecZosia" viewBox="0 0 200 260" data-zosia></svg>
+  <svg id="koniecKlient" class="duzy" viewBox="0 0 200 260"></svg>
+  <div class="kot" style="left:80%;bottom:5%"></div>
+  <div id="napisKoniec"></div>
+  <button class="guzik" id="nastepny">Następny klient ➜</button>
+</section>
+
+<div id="miau">Miau! 🐾</div>
+<button id="dzwiekBtn" title="Dźwięk">🔊</button>
+
+<script>
+// ---------- dźwięki (syntezowane, bez plików) ----------
+const Dzwiek = (() => {
+  let ctx, wlaczony = true;
+  function c() {
+    if (!wlaczony) return null;
+    try {
+      if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+      if (ctx.state === 'suspended') ctx.resume();
+    } catch (e) { return null; }
+    return ctx;
+  }
+  function ton(f, start, dur, typ = 'sine', vol = 0.2, fKoniec) {
+    const a = c(); if (!a) return;
+    const t = a.currentTime + start, o = a.createOscillator(), g = a.createGain();
+    o.type = typ; o.frequency.setValueAtTime(f, t);
+    if (fKoniec) o.frequency.exponentialRampToValueAtTime(fKoniec, t + dur);
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + dur);
+  }
+  function szum(dur, vol, filtr) {
+    const a = c(); if (!a) return;
+    const buf = a.createBuffer(1, a.sampleRate * dur, a.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    const s = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain();
+    s.buffer = buf; f.type = 'highpass'; f.frequency.value = filtr;
+    g.gain.setValueAtTime(vol, a.currentTime); g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + dur);
+    s.connect(f); f.connect(g); g.connect(a.destination); s.start();
+  }
+  const N = { c: 523, d: 587, e: 659, g: 784, a: 880, c2: 1046 };
+  return {
+    odblokuj: c,
+    przelacz() { wlaczony = !wlaczony; if (!wlaczony) try { speechSynthesis.cancel(); } catch (e) {} return wlaczony; },
+    jestWlaczony: () => wlaczony,
+    klik()    { ton(660, 0, 0.12, 'triangle', 0.2); },
+    dzwonek() { ton(N.e, 0, 0.5, 'sine', 0.25); ton(N.c2, 0.15, 0.7, 'sine', 0.2); },       // drzwi salonu
+    woda()    { szum(0.12, 0.12, 2500); },
+    kolor(i)  { ton(400 + i * 70, 0, 0.18, 'square', 0.1); ton(600 + i * 70, 0.08, 0.2, 'triangle', 0.15); },
+    stuk()    { ton(180, 0, 0.12, 'square', 0.25, 70); szum(0.08, 0.2, 1500); },
+    bzzt()    { ton(110, 0, 0.3, 'sawtooth', 0.12, 80); },
+    naprawa() { [N.c, N.e, N.g, N.c2].forEach((n, i) => ton(n, i * 0.1, 0.3, 'triangle', 0.22)); },
+    snip()    { szum(0.05, 0.3, 4000); szum(0.05, 0.3, 4500); setTimeout(() => szum(0.05, 0.3, 4000), 90); },
+    gwiazdka(i) { ton(N.c * Math.pow(1.26, i), 0, 0.4, 'triangle', 0.25); ton(N.c * Math.pow(1.26, i) * 2, 0.05, 0.3, 'sine', 0.12); },
+    fanfara() { [N.c, N.e, N.g, N.c2, N.g, N.c2].forEach((n, i) => ton(n, i * 0.14, 0.35, 'square', 0.1)); },
+    miau()    { ton(700, 0, 0.35, 'sawtooth', 0.12, 450); ton(500, 0.05, 0.3, 'sine', 0.15, 800); }
+  };
+})();
+function mow(tekst) {
+  if (!Dzwiek.jestWlaczony()) return;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(tekst);
+    u.lang = 'pl-PL'; u.rate = 0.9; u.pitch = 1.2;
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+
+// ---------- rysunki (SVG, do podmiany na rysunki Róży) ----------
+function postac({ skora, wlosy, ubranie, fryzura, wlosyKolor }) {
+  const w = wlosyKolor || wlosy;
+  const wlosyTyl = {
+    krotkie: `<ellipse cx="100" cy="78" rx="52" ry="48" fill="${w}"/>`,
+    dlugie:  `<ellipse cx="100" cy="85" rx="58" ry="62" fill="${w}"/><rect x="42" y="85" width="116" height="70" rx="30" fill="${w}"/>`,
+    kucyki:  `<circle cx="42" cy="78" r="20" fill="${w}"/><circle cx="158" cy="78" r="20" fill="${w}"/><ellipse cx="100" cy="76" rx="50" ry="44" fill="${w}"/>`,
+    kok:     `<circle cx="100" cy="30" r="22" fill="${w}"/><ellipse cx="100" cy="78" rx="50" ry="44" fill="${w}"/>`,
+    warkocze:`<rect x="42" y="80" width="22" height="95" rx="11" fill="${w}"/><rect x="136" y="80" width="22" height="95" rx="11" fill="${w}"/><ellipse cx="100" cy="76" rx="50" ry="44" fill="${w}"/>`,
+    irokez:  `<path d="M78 62 L88 6 L100 48 L112 6 L122 62Z" fill="${w}"/>`,
+    lysy:    ``
+  }[fryzura];
+  return `
+    ${wlosyTyl}
+    <rect x="55" y="150" width="90" height="100" rx="30" fill="${ubranie}"/>
+    <circle cx="100" cy="95" r="45" fill="${skora}"/>
+    ${(fryzura === 'lysy' || fryzura === 'irokez') ? '' : `<path d="M55 90 Q100 25 145 90 Q125 62 100 62 Q75 62 55 90Z" fill="${w}"/>`}
+    <circle cx="84" cy="98" r="5" fill="#333"/><circle cx="116" cy="98" r="5" fill="#333"/>
+    <circle cx="76" cy="112" r="7" fill="#ff9aa8" opacity=".6"/><circle cx="124" cy="112" r="7" fill="#ff9aa8" opacity=".6"/>
+    <path d="M86 116 Q100 130 114 116" stroke="#b03a5b" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+}
+// fartuszek Zosi: nagroda na końcu zmienia mu kolor i dodaje gwiazdkę
+const FARTUSZKI = ['#ffffff', '#ffd1e6', '#c8f0ff', '#fff3a8', '#d9c8ff'];
+let fartuszek = { nr: 0, gwiazdka: false };
+function zosia() {
+  return postac({ skora: '#ffd9b8', wlosy: '#7a3b1d', ubranie: '#7ad7c0', fryzura: 'dlugie' }) +
+    `<path d="M70 165 H130 L135 245 H65Z" fill="${FARTUSZKI[fartuszek.nr]}" stroke="#ff8fb8" stroke-width="4"/>
+     <circle cx="100" cy="200" r="7" fill="#ff8fb8"/>
+     ${fartuszek.gwiazdka ? '<text x="100" y="228" font-size="26" text-anchor="middle">⭐</text>' : ''}`;
+}
+function odswiezZosie() { document.querySelectorAll('[data-zosia]').forEach(s => s.innerHTML = zosia()); }
+
+// zwierzak w salonie (kot): dotknij, a podskoczy
+function kot() {
+  return `<svg class="kot-svg" viewBox="0 0 120 100">
+    <path d="M92 80 Q125 70 112 40" stroke="#f2994a" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <ellipse cx="62" cy="72" rx="38" ry="24" fill="#f2994a"/>
+    <circle cx="36" cy="46" r="26" fill="#f2994a"/>
+    <path d="M14 30 L18 4 L34 22Z M58 30 L54 4 L38 22Z" fill="#f2994a"/>
+    <circle cx="27" cy="44" r="4" fill="#333"/><circle cx="46" cy="44" r="4" fill="#333"/>
+    <path d="M32 54 Q37 59 42 54" stroke="#b03a5b" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M10 50 H0 M12 56 L2 60 M62 50 H72" stroke="#fff" stroke-width="2"/>
+  </svg>`;
+}
+document.querySelectorAll('.kot').forEach(k => {
+  k.innerHTML = kot();
+  k.addEventListener('click', () => {
+    k.classList.remove('skok'); void k.offsetWidth; k.classList.add('skok');
+    Dzwiek.miau();
+    const m = $('miau'), r = k.getBoundingClientRect();
+    m.style.left = r.left + 'px'; m.style.top = (r.top - 40) + 'px'; m.style.display = 'block';
+    setTimeout(() => m.style.display = 'none', 900);
+  });
+});
+const KLIENCI = [
+  { imie: 'Ola',   tekst: 'Dzień dobry! Chcę ładną fryzurę!',       opis: { skora:'#ffd9b8', wlosy:'#e8b04a', ubranie:'#ff9f43', fryzura:'kucyki' } },
+  { imie: 'Pan Karol', tekst: 'Dzień dobry! Przydałoby się strzyżenie.', opis: { skora:'#f2c29b', wlosy:'#4a4a4a', ubranie:'#5b8def', fryzura:'krotkie' } },
+  { imie: 'Pani Ewa',  tekst: 'Dzień dobry! Poproszę nowy kolor.',    opis: { skora:'#ffd9b8', wlosy:'#b8561f', ubranie:'#c06bd9', fryzura:'dlugie' } },
+  { imie: 'Franek',    tekst: 'Cześć! Zrób mi fajną fryzurę!',        opis: { skora:'#e8b48a', wlosy:'#2c1a10', ubranie:'#44c26b', fryzura:'krotkie' } },
+  { imie: 'Dziadek Stefan', tekst: 'Dzień dobry! Co tu zrobić z tą łysinką?', opis: { skora:'#f2c29b', wlosy:'#cfcfcf', ubranie:'#a0522d', fryzura:'lysy' } }
+];
+
+document.querySelectorAll('[data-zosia]').forEach(s => s.innerHTML = zosia());
+
+// ---------- logika ekranów ----------
+const $ = id => document.getElementById(id);
+function pokaz(id) {
+  document.querySelectorAll('.ekran').forEach(e => e.classList.remove('aktywny'));
+  $(id).classList.add('aktywny');
+}
+
+let aktualnyKlient = null;
+let stan = { kolor: false, fryzura: false, robot: false };
+function nowyKlient() {
+  const wzor = KLIENCI[Math.floor(Math.random() * KLIENCI.length)];
+  aktualnyKlient = { ...wzor, opis: { ...wzor.opis } };   // kopia, żeby farbowanie nie psuło wzoru
+  stan = { kolor: false, fryzura: false, robot: false };
+  setTimeout(() => Dzwiek.dzwonek(), 300);
+  const g = $('gosc');
+  g.className = '';
+  g.innerHTML = postac(aktualnyKlient.opis);
+  $('dymek').className = '';
+  $('dalej').className = 'guzik';
+  // wymuszenie reflow, żeby animacja wejścia ruszyła od początku
+  void g.offsetWidth;
+  g.classList.add('wszedl');
+  setTimeout(() => {
+    $('dymek').textContent = aktualnyKlient.imie + ': ' + aktualnyKlient.tekst;
+    $('dymek').classList.add('widoczny');
+    $('dalej').className = 'guzik widoczny';
+    mow(aktualnyKlient.tekst);
+  }, 2400);
+}
+
+$('graj').addEventListener('click', () => { Dzwiek.odblokuj(); Dzwiek.klik(); pokaz('klient'); nowyKlient(); });
+$('dzwiekBtn').addEventListener('click', () => { $('dzwiekBtn').textContent = Dzwiek.przelacz() ? '🔊' : '🔇'; });
+$('dalej').addEventListener('click', () => {
+  Dzwiek.klik();
+  const g = $('gosc');
+  g.classList.remove('wszedl');
+  g.classList.add('w-fotelu');
+  $('dymek').classList.remove('widoczny');
+  setTimeout(() => { pokaz('mycie'); startMycie(); }, 1100);
+});
+
+// ---------- ekran 3: mycie włosów ----------
+const SVG_NS = 'http://www.w3.org/2000/svg';
+let babelki = [];
+let myje = false;
+let kroplaCzas = 0;
+
+function startMycie() {
+  $('mycieKlient').innerHTML = postac(aktualnyKlient.opis);
+  const piana = $('piana');
+  piana.innerHTML = '';
+  babelki = [];
+  const lysy = aktualnyKlient.opis.fryzura === 'lysy';
+  const ile = lysy ? 10 : 26;
+  for (let i = 0; i < ile; i++) {
+    // losowy punkt w elipsie na głowie (włosy)
+    const kat = Math.random() * Math.PI * 2, r = Math.sqrt(Math.random());
+    const x = 100 + Math.cos(kat) * r * (lysy ? 30 : 52);
+    const y = (lysy ? 62 : 70) + Math.sin(kat) * r * (lysy ? 18 : 36);
+    const c = document.createElementNS(SVG_NS, 'circle');
+    c.setAttribute('cx', x); c.setAttribute('cy', y);
+    c.setAttribute('r', 11 + Math.random() * 8);
+    c.setAttribute('fill', '#fff'); c.setAttribute('stroke', '#bfe6ff'); c.setAttribute('stroke-width', 2);
+    piana.appendChild(c);
+    babelki.push({ x, y, el: c, zycie: 1 });
+  }
+  $('pasek').firstElementChild.style.width = '0%';
+  $('czysto').style.display = 'none';
+  $('dalejMycie').style.display = 'none';
+  $('prysznic').style.display = 'none';
+}
+
+function postep() {
+  const suma = babelki.reduce((s, b) => s + b.zycie, 0);
+  return 1 - suma / babelki.length;
+}
+
+function prysznicRuch(e) {
+  if (!myje) return;
+  const ekran = $('mycie').getBoundingClientRect();
+  const px = e.clientX - ekran.left, py = e.clientY - ekran.top;
+  const p = $('prysznic');
+  p.style.display = 'block';
+  p.style.left = px + 'px';
+  p.style.top = (py - 40) + 'px';
+
+  // krople lecące z prysznica do palca
+  const teraz = performance.now();
+  if (teraz - kroplaCzas > 40) {
+    kroplaCzas = teraz;
+    const k = document.createElement('div');
+    k.className = 'kropla';
+    k.style.left = (px + (Math.random() * 40 - 20)) + 'px';
+    k.style.top = (py - 40) + 'px';
+    k.style.setProperty('--spadek', '40px');
+    $('mycie').appendChild(k);
+    setTimeout(() => k.remove(), 450);
+  }
+
+  if (teraz - (prysznicRuch.dzwiek || 0) > 110) { prysznicRuch.dzwiek = teraz; Dzwiek.woda(); }
+
+  // zmywanie piany w punkcie pod prysznicem (przeliczenie na współrzędne SVG)
+  const r = $('piana').getBoundingClientRect();
+  const sx = (e.clientX - r.left) / r.width * 200;
+  const sy = (e.clientY - r.top) / r.height * 260;
+  babelki.forEach(b => {
+    if (b.zycie > 0 && Math.hypot(b.x - sx, b.y - sy) < 30) {
+      b.zycie = Math.max(0, b.zycie - 0.12);
+      b.el.setAttribute('opacity', b.zycie);
+    }
+  });
+  const pr = postep();
+  $('pasek').firstElementChild.style.width = Math.round(pr * 100) + '%';
+  if (pr > 0.97 && $('czysto').style.display === 'none') {
+    babelki.forEach(b => { b.zycie = 0; b.el.setAttribute('opacity', 0); });
+    $('pasek').firstElementChild.style.width = '100%';
+    $('czysto').style.display = 'block';
+    Dzwiek.naprawa();
+    $('dalejMycie').style.display = 'inline-block';
+    myje = false;
+    $('prysznic').style.display = 'none';
+  }
+}
+
+$('mycie').addEventListener('pointerdown', e => { if (e.target.closest('button')) return; myje = true; prysznicRuch(e); });
+$('mycie').addEventListener('pointermove', prysznicRuch);
+['pointerup', 'pointercancel'].forEach(t => $('mycie').addEventListener(t, () => { myje = false; $('prysznic').style.display = 'none'; }));
+$('dalejMycie').addEventListener('click', () => { Dzwiek.klik(); pokaz('farbowanie'); startFarbowanie(); });
+
+// ---------- ekran 4: farbowanie ----------
+const KOLORY = ['#ff4d6d', '#ff9f1c', '#ffd93d', '#3ddc84', '#35a7ff', '#9b5de5', '#ff8fb8', '#2b2b2b', '#8b4513', '#ffffff'];
+function startFarbowanie() {
+  const o = aktualnyKlient.opis;
+  $('instrFarba').textContent = 'Wybierz kolor włosów! 🎨';
+  if (o.fryzura === 'lysy') {          // łysy klient dostaje perukę, żeby było co farbować
+    o.fryzura = 'krotkie';
+    $('instrFarba').textContent = aktualnyKlient.imie + ' dostał perukę! Pomaluj ją 🎨';
+  }
+  $('farbaKlient').innerHTML = postac(o);
+  $('dalejFarba').style.display = 'none';
+  const p = $('paleta');
+  p.innerHTML = '';
+  KOLORY.forEach((k, i) => {
+    const b = document.createElement('div');
+    b.className = 'kolor'; b.style.background = k;
+    b.addEventListener('click', () => {
+      o.wlosyKolor = k;
+      $('farbaKlient').innerHTML = postac(o);
+      p.querySelectorAll('.kolor').forEach(x => x.classList.remove('wybrany'));
+      b.classList.add('wybrany');
+      Dzwiek.kolor(i);
+      stan.kolor = true;
+      $('dalejFarba').style.display = 'inline-block';
+    });
+    p.appendChild(b);
+  });
+}
+$('dalejFarba').addEventListener('click', () => { Dzwiek.klik(); pokaz('fryzura'); startFryzura(); });
+
+// ---------- ekran 5: suszarko-robot + fryzura ----------
+const STYLE = [['krotkie', 'Krótkie ✂️'], ['dlugie', 'Długie 💇'], ['kucyki', 'Kucyki 🎀'], ['kok', 'Kok 🍩'], ['warkocze', 'Warkocze 🪢'], ['irokez', 'Irokez 🦔']];
+let naprawy = 0;
+let robotBzzt = null;
+function startFryzura() {
+  naprawy = 0;
+  $('fryzuraKlient').innerHTML = postac(aktualnyKlient.opis);
+  $('robot').className = 'zepsuty';
+  $('robotNapis').textContent = '⚡ bzzzt... ⚡';
+  $('instrFryzura').textContent = 'Suszarko-robot się zepsuł! Stuknij go 3 razy 🔧';
+  $('opcjeFryzur').style.display = 'none';
+  $('dalejFryzura').style.display = 'none';
+  clearInterval(robotBzzt);
+  robotBzzt = setInterval(() => { if (naprawy < 3) Dzwiek.bzzt(); }, 1200);
+  const box = $('opcjeFryzur');
+  box.innerHTML = '';
+  STYLE.forEach(([id, nazwa]) => {
+    const b = document.createElement('button');
+    b.className = 'opcja'; b.textContent = nazwa;
+    b.addEventListener('click', () => {
+      aktualnyKlient.opis.fryzura = id;
+      $('fryzuraKlient').innerHTML = postac(aktualnyKlient.opis);
+      box.querySelectorAll('.opcja').forEach(x => x.classList.remove('wybrany'));
+      b.classList.add('wybrany');
+      Dzwiek.snip();
+      stan.fryzura = true;
+      $('dalejFryzura').style.display = 'inline-block';
+    });
+    box.appendChild(b);
+  });
+}
+$('robot').addEventListener('click', () => {
+  if (naprawy >= 3) { Dzwiek.naprawa(); return; }
+  naprawy++;
+  Dzwiek.stuk();
+  if (naprawy < 3) {
+    $('robotNapis').textContent = '🔧 jeszcze ' + (3 - naprawy) + '...';
+  } else {
+    clearInterval(robotBzzt);
+    $('robot').className = '';
+    $('robotNapis').textContent = '✨ działa! ✨';
+    $('instrFryzura').textContent = 'Hura! Teraz wybierz fryzurę ✂️';
+    $('opcjeFryzur').style.display = 'flex';
+    stan.robot = true;
+    setTimeout(() => Dzwiek.naprawa(), 150);
+  }
+});
+$('dalejFryzura').addEventListener('click', () => { clearInterval(robotBzzt); Dzwiek.klik(); pokaz('koniec'); startKoniec(); });
+
+// ---------- ekran 6: zadowolony klient, gwiazdki, fartuszek ----------
+function startKoniec() {
+  $('koniecKlient').innerHTML = postac(aktualnyKlient.opis);
+  const gwiazdy = 1 + (stan.kolor ? 1 : 0) + (stan.fryzura ? 1 : 0) + (stan.robot ? 1 : 0);
+  const sp = $('gwiazdki').children;
+  [...sp].forEach(s => s.classList.remove('jest'));
+  for (let i = 0; i < gwiazdy; i++) {
+    setTimeout(() => { sp[i].classList.add('jest'); Dzwiek.gwiazdka(i); }, 500 + i * 600);
+  }
+  // nowy fartuszek dla Zosi (4 gwiazdki = złota gwiazdka na fartuszku)
+  fartuszek.nr = (fartuszek.nr + 1) % FARTUSZKI.length;
+  fartuszek.gwiazdka = gwiazdy === 4;
+  odswiezZosie();
+  $('napisKoniec').innerHTML = aktualnyKlient.imie + ': „Super! Dziękuję!” 😍<br>Zosia dostaje <b>nowy fartuszek</b>! 👗 A fryzura jedzie na <b>Konkurs Fryzur w Poznaniu</b> 🏆';
+  setTimeout(() => { Dzwiek.fanfara(); mow('Super! Dziękuję!'); }, 500 + gwiazdy * 600);
+  for (let i = 0; i < 14; i++) {
+    const k = document.createElement('div');
+    k.className = 'konfetti';
+    k.textContent = ['✨', '🎉', '💖', '⭐'][i % 4];
+    k.style.left = (Math.random() * 95) + 'vw';
+    k.style.animationDelay = (Math.random() * 4) + 's';
+    $('koniec').appendChild(k);
+  }
+}
+$('nastepny').addEventListener('click', () => {
+  Dzwiek.klik();
+  document.querySelectorAll('.konfetti').forEach(k => k.remove());
+  pokaz('klient'); nowyKlient();
+});
+</script>
+</body>
+</html>
