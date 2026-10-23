@@ -18,3 +18,10 @@
 - Decyzje: grafiki generowane w ChatGPT (włosy jako osobne szare warstwy, dopasowane skalą do głowy bazowej); gra nazywa się „Salon u Róży” (bohaterka nadal Zosia); ikona = róża rysowana kodem.
 - Niedokończone / ryzyka: Zosia tylko ~270 px (miękka na retinie); ekrany 3–5 mają gradienty zamiast tła, robot to emoji; nic nie było klikane na żywo (tylko zrzuty); na iPadzie trzeba usunąć starą ikonę i dodać grę od nowa; konkurs fryzur to tylko napis.
 - Następny krok: zagrać z Różą na iPadzie, spisać jej uwagi i poprawić.
+
+## 2026-10-23 20:40 — Dźwięki ElevenLabs, tła ekranów 3–5, grafika robota
+- Zrobione: 6 dźwięków z ElevenLabs (miau, prysznic w pętli, suszarka, nożyczki, robot, brawa) wpięte w Dzwiek z zapasem syntezowanym; tła mycia, farbowania i fryzury z ChatGPT; robot w 2 stanach (zepsuty/naprawiony) wycięty z grafiki, zamiast emoji. Wszystko wypchnięte na GitHub Pages.
+- Zmienione pliki: index.html, sw.js (v8), snd/*.mp3 (6), img/tlo-mycie|farbowanie|fryzura.webp, img/robot-zepsuty|dziala.webp.
+- Decyzje: próbki ładowane przez Web Audio (pętla prysznica, suszarka 2 s po wyborze fryzury); tła jako CSS cover przy dole.
+- Niedokończone / ryzyka: nic nie klikane na żywo (tylko parsowanie JS); suszarka to 1 s zapętlona, może mieć szew; robot może zasłaniać się z wózkiem z tła; na iPadzie trzeba usunąć starą ikonę i dodać grę od nowa.
+- Następny krok: zagrać z Różą na iPadzie, spisać uwagi, poprawić.
