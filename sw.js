@@ -1,5 +1,5 @@
 // Service worker: najpierw sieć (świeże wersje gry), a offline bierze z pamięci podręcznej.
-const WERSJA = 'salon-u-zosi-v8';
+const WERSJA = 'salon-u-zosi-v9';
 const PLIKI = ['./', 'index.html', 'manifest.json', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png',
   'img/fartuszek.webp',
   'img/gumki-kok.webp',

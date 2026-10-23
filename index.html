@@ -36,7 +36,8 @@
     padding: 0.35em 1.4em; box-shadow: 0 8px 0 #d85c8c; cursor: pointer;
   }
   .guzik:active { transform: translateY(6px); box-shadow: 0 2px 0 #d85c8c; }
-  #start .guzik { margin: 0 0 4vh; }
+  #start .guzik { margin: 0 0 1vh; }
+  #start .guzik.maly { margin: 0 0 3vh; }
 
   /* Ekran 2: klient wchodzi */
   #klient, #koniec { overflow: hidden; background: #ffc9de; }
@@ -125,6 +126,27 @@
   .kot img { width: 100%; display: block; }
   .kot.skok { animation: kotSkok .5s; }
   @keyframes kotSkok { 40% { transform: translateY(-5vh) rotate(-8deg); } }
+  .kot .ozdoba { position: absolute; left: 45%; top: -10%; transform: translateX(-50%); font-size: calc(max(100vw, 133.333vh) * 0.04); line-height: 1; pointer-events: none; }
+  #monety { position: fixed; top: 2vh; right: 2vw; z-index: 10; font-size: clamp(22px, 3.6vw, 40px); font-weight: bold; background: #fff; border: 3px solid #f2b705; border-radius: 999px; padding: .15em .7em; display: none; }
+  #monety.skok { animation: kotSkok .5s; }
+  .guzik.maly { font-size: clamp(18px, 3vw, 32px); background: #f2b705; box-shadow: 0 6px 0 #c28f00; }
+  #sklepikBtn { position: absolute; left: 4vw; bottom: 4vh; }
+  #nowaMoneta { display: inline-block; }
+  /* sklepik */
+  #sklep { background: linear-gradient(#fff3c4, #ffd6e8); text-align: center; overflow: auto; }
+  #sklep h2 { margin: 3vh 0 1vh; font-size: clamp(28px, 5vw, 56px); }
+  #sklep h3 { margin: 1.5vh 0 .5vh; font-size: clamp(18px, 2.8vw, 30px); }
+  .towary { display: flex; gap: 2vw; justify-content: center; flex-wrap: wrap; padding: 0 3vw; }
+  .towar { width: clamp(110px, 17vw, 190px); background: #fff; border: 4px solid #f2b705; border-radius: 22px; padding: .5em .3em; font: inherit; color: var(--tekst); cursor: pointer; }
+  .towar:active { transform: scale(.94); }
+  .towar .ik { display: block; font-size: clamp(40px, 7vw, 76px); line-height: 1.1; }
+  .towar .nz { display: block; font-weight: bold; font-size: clamp(15px, 2.2vw, 24px); }
+  .towar .cn { display: block; font-size: clamp(15px, 2.2vw, 24px); }
+  .towar.kupiony { border-color: #5bc8a8; }
+  .towar.zalozony { background: #d9fff0; }
+  .towar.brak { opacity: .55; }
+  #wrocSklep { margin: 2.5vh 0 3vh; font-size: clamp(22px, 4vw, 44px); }
+  .kolor.spec { border-color: #ffe27a; }
   #miau { position: absolute; font-size: clamp(18px, 2.6vw, 30px); background: #fff; border: 3px solid var(--rozowy); border-radius: 14px; padding: .1em .5em; display: none; pointer-events: none; }
 </style>
 </head>
@@ -136,6 +158,7 @@
   <div class="podtytul">salon fryzjerski w centrum Poznania</div>
   <img class="zosia" src="img/zosia.webp" alt="Zosia fryzjerka">
   <button class="guzik" id="graj">▶ Graj</button>
+  <button class="guzik maly" id="sklepStart">🛍️ Sklepik</button>
 </section>
 
 <!-- EKRAN 2: KLIENT WCHODZI -->
@@ -193,9 +216,21 @@
   <div id="gwiazdki"><span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span></div>
   <div id="napisKoniec"></div>
   <button class="guzik" id="nastepny">Następny klient ➜</button>
+  <button class="guzik maly" id="sklepikBtn">🛍️ Sklepik</button>
+</section>
+
+<!-- EKRAN: SKLEPIK -->
+<section id="sklep" class="ekran">
+  <h2>🛍️ Sklepik</h2>
+  <h3>Magiczne farby do włosów</h3>
+  <div class="towary" id="towaryKolor"></div>
+  <h3>Ozdoby dla kotka</h3>
+  <div class="towary" id="towaryKot"></div>
+  <button class="guzik" id="wrocSklep">⬅ Wróć</button>
 </section>
 
 <div id="miau">Miau! 🐾</div>
+<div id="monety">🪙 <span id="monetyLiczba">0</span></div>
 <button id="dzwiekBtn" title="Dźwięk">🔊</button>
 
 <script>
@@ -300,6 +335,60 @@ function gdyGotowy(img, fn) {
   if (img.complete && img.naturalWidth) fn(); else img.addEventListener('load', fn, { once: true });
 }
 
+// ---------- zapis postępów, monety, sklepik ----------
+const ZAPIS_KLUCZ = 'salon-u-rozy';
+const zapis = { monety: 0, kupione: [], kot: null, fartuszek: 0 };
+try { Object.assign(zapis, JSON.parse(localStorage.getItem(ZAPIS_KLUCZ)) || {}); } catch (e) {}
+function zapisz() { try { localStorage.setItem(ZAPIS_KLUCZ, JSON.stringify(zapis)); } catch (e) {} }
+const SKLEP = [
+  { id: 'zloto',    typ: 'kolor', ikona: '🥇', nazwa: 'Złoty',   cena: 8,  kolor: '#d4af37', tlo: '#d4af37' },
+  { id: 'tecza',    typ: 'kolor', ikona: '🌈', nazwa: 'Tęcza',   cena: 12, kolor: 'tecza',   tlo: 'linear-gradient(135deg,#ff4d6d,#ffd93d,#3ddc84,#35a7ff,#9b5de5)' },
+  { id: 'brokat',   typ: 'kolor', ikona: '✨', nazwa: 'Brokat',  cena: 16, kolor: 'brokat',  tlo: 'radial-gradient(circle at 30% 30%,#fff 0 8%,transparent 10%),radial-gradient(circle at 70% 60%,#fff 0 8%,transparent 10%),#ff8fb8' },
+  { id: 'kokardka', typ: 'kot',   ikona: '🎀', nazwa: 'Kokardka', cena: 6 },
+  { id: 'cylinder', typ: 'kot',   ikona: '🎩', nazwa: 'Cylinder', cena: 10 },
+  { id: 'korona',   typ: 'kot',   ikona: '👑', nazwa: 'Korona',   cena: 12 }
+];
+function odswiezMonety() {
+  $('monetyLiczba').textContent = zapis.monety;
+  $('monety').style.display = 'block';
+}
+function odswiezKota() {
+  const t = SKLEP.find(x => x.id === zapis.kot);
+  document.querySelectorAll('.kot').forEach(k => {
+    let o = k.querySelector('.ozdoba');
+    if (!t) { if (o) o.remove(); return; }
+    if (!o) { o = document.createElement('span'); o.className = 'ozdoba'; k.appendChild(o); }
+    o.textContent = t.ikona;
+  });
+}
+function narysujSklep() {
+  [['kolor', 'towaryKolor'], ['kot', 'towaryKot']].forEach(([typ, boxId]) => {
+    const box = $(boxId); box.innerHTML = '';
+    SKLEP.filter(x => x.typ === typ).forEach(t => {
+      const ma = zapis.kupione.includes(t.id);
+      const b = document.createElement('button');
+      b.className = 'towar' + (ma ? ' kupiony' : '') + (typ === 'kot' && zapis.kot === t.id ? ' zalozony' : '') + (!ma && zapis.monety < t.cena ? ' brak' : '');
+      b.innerHTML = '<span class="ik">' + t.ikona + '</span><span class="nz">' + t.nazwa + '</span><span class="cn">' + (ma ? (typ === 'kot' ? (zapis.kot === t.id ? '✅ założone' : 'założyć') : '✅ masz') : '🪙 ' + t.cena) + '</span>';
+      b.addEventListener('click', () => {
+        if (!ma) {
+          if (zapis.monety < t.cena) { Dzwiek.stuk(); return; }
+          zapis.monety -= t.cena; zapis.kupione.push(t.id);
+          Dzwiek.naprawa();
+          if (typ === 'kot') zapis.kot = t.id;
+        } else if (typ === 'kot') {
+          zapis.kot = zapis.kot === t.id ? null : t.id;   // drugie stuknięcie zdejmuje ozdobę
+          Dzwiek.klik();
+        } else { Dzwiek.kolor(3); return; }
+        zapisz(); odswiezMonety(); odswiezKota(); narysujSklep();
+        if (typ === 'kot' && zapis.kot) Dzwiek.miau();
+      });
+      box.appendChild(b);
+    });
+  });
+}
+let sklepWroc = 'start';
+function otworzSklep(skad) { sklepWroc = skad; narysujSklep(); pokaz('sklep'); }
+
 // klient = ciało (img) + włosy (canvas, tyl i przód) + gumki (img)
 let licznikMalowania = 0;
 function malujKlienta(el, opis) {
@@ -323,7 +412,22 @@ function malujKlienta(el, opis) {
     const c = t.getContext('2d');
     c.drawImage(wl, 0, 0, SZER, WYS);
     c.globalCompositeOperation = 'multiply';  // szara warstwa włosów * kolor = zafarbowane włosy z cieniami
-    c.fillStyle = opis.kolor; c.fillRect(0, 0, SZER, WYS);
+    if (opis.kolor === 'tecza') {
+      const g = c.createLinearGradient(0, 40, 0, 520);
+      ['#ff4d6d', '#ff9f1c', '#ffd93d', '#3ddc84', '#35a7ff', '#9b5de5'].forEach((k, i) => g.addColorStop(i / 5, k));
+      c.fillStyle = g;
+    } else c.fillStyle = opis.kolor === 'brokat' ? '#ff8fb8' : opis.kolor;
+    c.fillRect(0, 0, SZER, WYS);
+    if (opis.kolor === 'brokat') {            // stałe "losowe" iskierki, żeby brokat nie migotał przy każdym malowaniu
+      c.globalCompositeOperation = 'source-over';
+      let r = 7;
+      for (let i = 0; i < 260; i++) {
+        r = (r * 16807) % 2147483647; const x = r % SZER;
+        r = (r * 16807) % 2147483647; const y = r % 560;
+        c.fillStyle = i % 3 ? '#fff' : '#ffe27a';
+        c.beginPath(); c.arc(x, y, 2 + (i % 4), 0, 6.3); c.fill();
+      }
+    }
     c.globalCompositeOperation = 'destination-in';
     c.drawImage(wl, 0, 0, SZER, WYS);
     if (WLOSY_ZA_UBRANIEM.includes(opis.styl)) {
@@ -341,7 +445,7 @@ function malujKlienta(el, opis) {
 
 // nagroda: nowy fartuszek dla Zosi (każdy kolejny ma inny odcień, 4 gwiazdki = złota gwiazdka)
 const FARTUSZEK_ODCIEN = [0, 60, 150, 200, 290];
-let fartuszek = { nr: 0, gwiazdka: false };
+let fartuszek = { nr: zapis.fartuszek || 0, gwiazdka: false };
 
 // zwierzak w salonie (kot): dotknij, a podskoczy
 document.querySelectorAll('.kot').forEach(k => {
@@ -505,9 +609,11 @@ function startFarbowanie() {
   $('dalejFarba').style.display = 'none';
   const p = $('paleta');
   p.innerHTML = '';
-  KOLORY.forEach((k, i) => {
+  const wszystkie = KOLORY.map(k => ({ kolor: k, tlo: k }))
+    .concat(SKLEP.filter(t => t.typ === 'kolor' && zapis.kupione.includes(t.id)).map(t => ({ kolor: t.kolor, tlo: t.tlo, spec: true })));
+  wszystkie.forEach(({ kolor: k, tlo, spec }, i) => {
     const b = document.createElement('div');
-    b.className = 'kolor'; b.style.background = k;
+    b.className = 'kolor' + (spec ? ' spec' : ''); b.style.background = tlo;
     b.addEventListener('click', () => {
       o.kolor = k;
       malujKlienta($('farbaKlient'), o);
@@ -586,13 +692,18 @@ function startKoniec() {
   // nowy fartuszek dla Zosi (4 gwiazdki = złota gwiazdka)
   fartuszek.nr = (fartuszek.nr + 1) % FARTUSZEK_ODCIEN.length;
   fartuszek.gwiazdka = gwiazdy === 4;
+  const zarobek = gwiazdy * 2;
+  zapis.monety += zarobek; zapis.fartuszek = fartuszek.nr; zapisz();
   const nag = $('nagroda');
   nag.classList.remove('pokaz'); void nag.offsetWidth;
   $('fartuszekImg').style.filter = 'hue-rotate(' + FARTUSZEK_ODCIEN[fartuszek.nr] + 'deg)';
   $('fartuszekGwiazdka').style.display = fartuszek.gwiazdka ? 'block' : 'none';
   setTimeout(() => nag.classList.add('pokaz'), 500 + gwiazdy * 600);
-  $('napisKoniec').innerHTML = aktualnyKlient.imie + ': „Super! Dziękuję!” 😍 Zosia dostaje <b>nowy fartuszek</b>! 👗<br>Fryzura jedzie na <b>Konkurs Fryzur w Poznaniu</b> 🏆';
-  setTimeout(() => { Dzwiek.fanfara(); mow('Super! Dziękuję!'); }, 500 + gwiazdy * 600);
+  $('napisKoniec').innerHTML = aktualnyKlient.imie + ': „Super! Dziękuję!” 😍 Zosia dostaje <b>nowy fartuszek</b>! 👗<br>Fryzura jedzie na <b>Konkurs Fryzur w Poznaniu</b> 🏆<br>Napiwek: <b>+' + zarobek + ' 🪙</b>';
+  setTimeout(() => {
+    Dzwiek.fanfara(); mow('Super! Dziękuję!');
+    odswiezMonety(); $('monety').classList.remove('skok'); void $('monety').offsetWidth; $('monety').classList.add('skok');
+  }, 500 + gwiazdy * 600);
   for (let i = 0; i < 14; i++) {
     const k = document.createElement('div');
     k.className = 'konfetti';
@@ -607,6 +718,10 @@ $('nastepny').addEventListener('click', () => {
   document.querySelectorAll('.konfetti').forEach(k => k.remove());
   pokaz('klient'); nowyKlient();
 });
+$('sklepStart').addEventListener('click', () => { Dzwiek.odblokuj(); Dzwiek.klik(); otworzSklep('start'); });
+$('sklepikBtn').addEventListener('click', () => { Dzwiek.klik(); otworzSklep('koniec'); });
+$('wrocSklep').addEventListener('click', () => { Dzwiek.klik(); pokaz(sklepWroc); });
+odswiezMonety(); odswiezKota();
 if ('serviceWorker' in navigator) {   // PWA: działa offline po pierwszym wejściu
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
