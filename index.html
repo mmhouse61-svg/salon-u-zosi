@@ -62,7 +62,7 @@
   #dalej.widoczny { display: inline-block; }
 
   /* Ekran 3: placeholder */
-  #mycie { background: linear-gradient(var(--mietowy), #e8fbf4); touch-action: none; text-align: center; }
+  #mycie { background: var(--mietowy) url(img/tlo-mycie.webp) center bottom / cover no-repeat; touch-action: none; text-align: center; }
   #mycie .instrukcja { position: absolute; top: 3vh; left: 50%; transform: translateX(-50%); font-size: clamp(18px, 3vw, 34px); background: #fff; border: 4px solid #5bc8a8; border-radius: 18px; padding: 0.3em 1em; white-space: nowrap; }
   #mycieKlient { position: absolute; left: 50%; top: 52%; transform: translate(-50%, -50%); --h: 82vh; }
   #piana { position: absolute; left: 50%; top: 52%; transform: translate(-50%, -50%); height: 82vh; width: calc(82vh * 0.7692); pointer-events: none; }
@@ -83,7 +83,7 @@
   .dalej-prawo { position: absolute; right: 4vw; bottom: 4vh; font-size: clamp(22px, 4vw, 44px); display: none; }
 
   /* Ekran 4: farbowanie */
-  #farbowanie { background: linear-gradient(#f3e1ff, #fbeeff); }
+  #farbowanie { background: #f3e1ff url(img/tlo-farbowanie.webp) center bottom / cover no-repeat; }
   #farbaKlient { top: 8vh; --h: 64vh; }
   #paleta { position: absolute; left: 50%; bottom: 4vh; transform: translateX(-50%); display: flex; gap: 2vw; flex-wrap: wrap; justify-content: center; width: 70vw; }
   .kolor { width: clamp(44px, 7vw, 80px); height: clamp(44px, 7vw, 80px); border-radius: 50%; border: 5px solid #fff; box-shadow: 0 4px 0 rgba(0,0,0,.2); cursor: pointer; }
