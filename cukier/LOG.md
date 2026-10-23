@@ -25,3 +25,10 @@
 - Decyzje: próbki ładowane przez Web Audio (pętla prysznica, suszarka 2 s po wyborze fryzury); tła jako CSS cover przy dole.
 - Niedokończone / ryzyka: nic nie klikane na żywo (tylko parsowanie JS); suszarka to 1 s zapętlona, może mieć szew; robot może zasłaniać się z wózkiem z tła; na iPadzie trzeba usunąć starą ikonę i dodać grę od nowa.
 - Następny krok: zagrać z Różą na iPadzie, spisać uwagi, poprawić.
+
+## 2026-10-23 20:50 — Monety, zapis, sklepik, życzenia klientów
+- Zrobione: monety (2 za gwiazdkę), zapis w localStorage (monety, zakupy, fartuszek), sklepik (farby: Złoty 8, Tęcza 12, Brokat 16; ozdoby kota: kokardka 6, cylinder 10, korona 12), życzenia klientów (kolor + fryzura, +3 monety za każde trafione). Wypchnięte na GitHub Pages.
+- Zmienione pliki: index.html, sw.js (v10), cukier/STAN.md, cukier/LOG.md.
+- Decyzje: nagrody kosmetyczne bez kar i liczników czasu (6-latka); zakupy bez nowych grafik (emoji + kod); użytkownik potwierdził, że ekrany działają na iPadzie poziomo.
+- Niedokończone / ryzyka: tylko zrzuty z przeglądarki, nie przeklikane na żywo; pozycja ozdoby na kocie ustawiona na oko; Róża nie widziała jeszcze sklepiku ani życzeń.
+- Następny krok: Róża gra ~15 min, spisać jej uwagi (co by kupiła, czy rozumie etykietę życzenia), poprawki.

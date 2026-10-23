@@ -1,5 +1,5 @@
 # Stan projektu: Gra "Salon u Róży"
-Zaktualizowano: 2026-10-23 20:40
+Zaktualizowano: 2026-10-23 20:50
 
 ## Kierunek
 Pierwsza gra na iPada 6-letniej Róży (rodzinny projekt, nauka i zabawa, nie biznes). Cel: prosta, grywalna gra o salonie fryzjerskim, którą Róża współtworzy swoimi pomysłami.
@@ -11,12 +11,13 @@ Pierwsza gra na iPada 6-letniej Róży (rodzinny projekt, nauka i zabawa, nie bi
 - Grafiki z ChatGPT (WebP, 608 KB): 5 klientów, osobne warstwy włosów kolorowane w canvasie, Zosia, kot, fartuszek, tło + lada. Dźwięki: 6 próbek z ElevenLabs (snd/*.mp3: miau, prysznic, suszarka, nożyczki, robot, brawa) + synteza jako zapas + głos iPada po polsku.
 - Aktualizacja: edytuj index.html, `git commit`, `git push` (zgoda na gh w `.claude/settings.local.json`).
 - Nowe grafiki: oryginały w `grafiki/` (poza gitem), skrypt `narzedzia/przygotuj_grafiki.py` (wymaga pillow, numpy, scipy).
-- Nic nie było klikane na żywo, tylko zrzuty z przeglądarki.
+- Rozgrywka (SW v10): monety (2 za gwiazdkę), zapis w localStorage, sklepik (farby Złoty/Tęcza/Brokat, ozdoby kota kokardka/cylinder/korona), życzenia klientów (kolor + fryzura, +3 monety za trafienie). Użytkownik potwierdził: ekrany działają na iPadzie poziomo.
+- Nowe rzeczy (sklepik, życzenia) oglądane tylko na zrzutach z przeglądarki; Róża ich jeszcze nie widziała.
 
 ## Następny krok
-1. Zagrać z Różą na iPadzie (usunąć starą ikonę, dodać grę od nowa z Safari), spisać jej uwagi.
-2. Poprawki z jej uwag.
-3. Potem: Zosia w większym rozmiarze, ewentualnie prawdziwy konkurs fryzur, prawdziwe głosy postaci.
+1. Róża gra ~15 min na iPadzie (usunąć starą ikonę, dodać grę od nowa), spisać uwagi: co by kupiła, czy rozumie etykietę życzenia, czy ozdoba siedzi na głowie kota.
+2. Poprawki z jej uwag (pozycja ozdoby kota, ceny, czytelność).
+3. Potem: prawdziwy Konkurs Fryzur, Koziołki z Ratusza, Zosia w większym rozmiarze.
 
 ## Decyzje
 - 2026-10-23 — Bohaterka: Zosia, salon w Poznaniu — wybór Róży.
@@ -30,14 +31,14 @@ Pierwsza gra na iPada 6-letniej Róży (rodzinny projekt, nauka i zabawa, nie bi
 - 2026-10-23 — Ikona PWA: róża.
 
 - 2026-10-23 — Dźwięki: próbki ElevenLabs w repo (snd/), ok. 100 kredytów — żywszy salon dla Róży.
+- 2026-10-23 — Rozgrywka: monety + sklepik kosmetyczny + życzenia klientów, bez kar i liczników czasu — grywalność dla 6-latki.
 
 ## Parking pomysłów
 - Czarodziejska farba (tęcza, brokat, gwiazdki).
 - Koziołki z Ratusza jako klienci z "koziołkową fryzurą".
 - Prawdziwe głosy postaci z ElevenLabs (kosztuje kredyty; efekty dźwiękowe już są).
 - Rysunki Róży zamiast generowanych.
-- Zapis postępów.
 
 ## Blokery / pytania do użytkownika
 - Konkurs fryzur: osobna rozgrywka, czy zostaje napis w finale?
-- Strażnik: sesja była bardzo długa i rozrosła się (poprawki SVG, potem zmiana na grafiki ChatGPT); gra wciąż nie przeszła testu z Różą na iPadzie, więc dalsze ozdoby warto robić dopiero po jej uwagach.
+- Strażnik: w tej sesji dodano dwie warstwy rozgrywki (sklepik, życzenia) na polecenie użytkownika, ale Róża jeszcze ich nie widziała. Kolejne dodatki tylko po jej uwagach.
