@@ -91,9 +91,10 @@
   .kolor.wybrany { outline: 5px solid var(--tekst); }
 
   /* Ekran 5: fryzura + suszarko-robot */
-  #fryzura { background: linear-gradient(#e3f2ff, #f4faff); }
+  #fryzura { background: #ffd6e8 url(img/tlo-fryzura.webp) center bottom / cover no-repeat; }
   #fryzuraKlient { top: 8vh; --h: 60vh; left: 36%; }
   #robot { position: absolute; right: 8vw; top: 24vh; font-size: clamp(80px, 16vw, 180px); cursor: pointer; text-align: center; line-height: 1; }
+  #robot img { display: block; width: clamp(130px, 22vw, 260px); margin: 0 auto; }
   #robot small { display: block; font-size: clamp(16px, 2.4vw, 28px); background: #fff; border-radius: 14px; padding: .2em .6em; margin-top: .3em; }
   #robot.zepsuty { animation: trzes .25s infinite; }
   @keyframes trzes { 0%,100% { transform: translateX(-4px) rotate(-3deg); } 50% { transform: translateX(4px) rotate(3deg); } }
@@ -174,7 +175,7 @@
 <section id="fryzura" class="ekran">
   <div class="instr" id="instrFryzura">Suszarko-robot się zepsuł! Stuknij go 3 razy 🔧</div>
   <div id="fryzuraKlient" class="duzy klient"></div>
-  <div id="robot" class="zepsuty">🤖<small id="robotNapis">⚡ bzzzt... ⚡</small></div>
+  <div id="robot" class="zepsuty"><img id="robotImg" src="img/robot-zepsuty.webp" alt="robot"><small id="robotNapis">⚡ bzzzt... ⚡</small></div>
   <div id="opcjeFryzur"></div>
   <button class="guzik dalej-prawo" id="dalejFryzura">Gotowe ➜</button>
 </section>
@@ -529,6 +530,7 @@ function startFryzura() {
   naprawy = 0;
   malujKlienta($('fryzuraKlient'), aktualnyKlient.opis);
   $('robot').className = 'zepsuty';
+  $('robotImg').src = IMG + 'robot-zepsuty.webp';
   $('robotNapis').textContent = '⚡ bzzzt... ⚡';
   $('instrFryzura').textContent = 'Suszarko-robot się zepsuł! Stuknij go 3 razy 🔧';
   $('opcjeFryzur').style.display = 'none';
@@ -562,6 +564,7 @@ $('robot').addEventListener('click', () => {
   } else {
     clearInterval(robotBzzt);
     $('robot').className = '';
+    $('robotImg').src = IMG + 'robot-dziala.webp';
     $('robotNapis').textContent = '✨ działa! ✨';
     $('instrFryzura').textContent = 'Hura! Teraz wybierz fryzurę ✂️';
     $('opcjeFryzur').style.display = 'flex';
