@@ -1,5 +1,5 @@
 // Service worker: najpierw sieć (świeże wersje gry), a offline bierze z pamięci podręcznej.
-const WERSJA = 'salon-u-zosi-v5';
+const WERSJA = 'salon-u-zosi-v6';
 const PLIKI = ['./', 'index.html', 'manifest.json', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png',
   'img/fartuszek.webp',
   'img/gumki-kok.webp',
@@ -18,7 +18,8 @@ const PLIKI = ['./', 'index.html', 'manifest.json', 'icon-192.png', 'icon-512.pn
   'img/wlosy-krotkie.webp',
   'img/wlosy-kucyki.webp',
   'img/wlosy-warkocze.webp',
-  'img/zosia.webp'];
+  'img/zosia.webp',
+  'snd/miau.mp3', 'snd/prysznic.mp3', 'snd/suszarka.mp3', 'snd/nozyczki.mp3', 'snd/robot.mp3', 'snd/brawa.mp3'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(WERSJA).then(c => c.addAll(PLIKI)).then(() => self.skipWaiting()));

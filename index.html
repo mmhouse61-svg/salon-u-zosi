@@ -226,22 +226,46 @@ const Dzwiek = (() => {
     g.gain.setValueAtTime(vol, a.currentTime); g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + dur);
     s.connect(f); f.connect(g); g.connect(a.destination); s.start();
   }
+  // próbki z ElevenLabs (snd/*.mp3); gdy się nie wczytają, grają dźwięki syntezowane
+  const probki = {}, petle = {};
+  let zaladowane = false;
+  function laduj() {
+    if (zaladowane || !ctx) return;
+    zaladowane = true;
+    ['miau', 'prysznic', 'suszarka', 'nozyczki', 'robot', 'brawa'].forEach(n => {
+      fetch('snd/' + n + '.mp3').then(r => r.arrayBuffer())
+        .then(d => new Promise((ok, err) => ctx.decodeAudioData(d, ok, err)))
+        .then(b => { probki[n] = b; }).catch(() => {});
+    });
+  }
+  function graj(nazwa, vol = 0.8, petla = false) {
+    const a = c(); if (!a || !probki[nazwa]) return null;
+    const s = a.createBufferSource(), g = a.createGain();
+    s.buffer = probki[nazwa]; s.loop = petla; g.gain.value = vol;
+    s.connect(g); g.connect(a.destination); s.start();
+    return { stop() { try { g.gain.setTargetAtTime(0, a.currentTime, 0.05); s.stop(a.currentTime + 0.3); } catch (e) {} } };
+  }
+  function petlaStop(nazwa) { if (petle[nazwa]) { petle[nazwa].stop(); delete petle[nazwa]; } }
   const N = { c: 523, d: 587, e: 659, g: 784, a: 880, c2: 1046 };
   return {
-    odblokuj: c,
-    przelacz() { wlaczony = !wlaczony; if (!wlaczony) try { speechSynthesis.cancel(); } catch (e) {} return wlaczony; },
+    odblokuj() { c(); laduj(); },
+    przelacz() { wlaczony = !wlaczony; if (!wlaczony) { Object.keys(petle).forEach(petlaStop); try { speechSynthesis.cancel(); } catch (e) {} } return wlaczony; },
+    // dźwięk w pętli (np. prysznic), true gdy gra próbka
+    petlaStart(nazwa, vol) { if (petle[nazwa]) return true; const p = graj(nazwa, vol, true); if (p) petle[nazwa] = p; return !!p; },
+    petlaStop,
+    suszarka() { if (this.petlaStart('suszarka', 0.7)) setTimeout(() => petlaStop('suszarka'), 2200); },
     jestWlaczony: () => wlaczony,
     klik()    { ton(660, 0, 0.12, 'triangle', 0.2); },
     dzwonek() { ton(N.e, 0, 0.5, 'sine', 0.25); ton(N.c2, 0.15, 0.7, 'sine', 0.2); },       // drzwi salonu
     woda()    { szum(0.12, 0.12, 2500); },
     kolor(i)  { ton(400 + i * 70, 0, 0.18, 'square', 0.1); ton(600 + i * 70, 0.08, 0.2, 'triangle', 0.15); },
     stuk()    { ton(180, 0, 0.12, 'square', 0.25, 70); szum(0.08, 0.2, 1500); },
-    bzzt()    { ton(110, 0, 0.3, 'sawtooth', 0.12, 80); },
+    bzzt()    { if (!graj('robot', 0.6)) ton(110, 0, 0.3, 'sawtooth', 0.12, 80); },
     naprawa() { [N.c, N.e, N.g, N.c2].forEach((n, i) => ton(n, i * 0.1, 0.3, 'triangle', 0.22)); },
-    snip()    { szum(0.05, 0.3, 4000); szum(0.05, 0.3, 4500); setTimeout(() => szum(0.05, 0.3, 4000), 90); },
+    snip()    { if (graj('nozyczki', 0.8)) return; szum(0.05, 0.3, 4000); szum(0.05, 0.3, 4500); setTimeout(() => szum(0.05, 0.3, 4000), 90); },
     gwiazdka(i) { ton(N.c * Math.pow(1.26, i), 0, 0.4, 'triangle', 0.25); ton(N.c * Math.pow(1.26, i) * 2, 0.05, 0.3, 'sine', 0.12); },
-    fanfara() { [N.c, N.e, N.g, N.c2, N.g, N.c2].forEach((n, i) => ton(n, i * 0.14, 0.35, 'square', 0.1)); },
-    miau()    { ton(700, 0, 0.35, 'sawtooth', 0.12, 450); ton(500, 0.05, 0.3, 'sine', 0.15, 800); }
+    fanfara() { [N.c, N.e, N.g, N.c2, N.g, N.c2].forEach((n, i) => ton(n, i * 0.14, 0.35, 'square', 0.1)); graj('brawa', 0.8); },
+    miau()    { if (!graj('miau', 0.9)) { ton(700, 0, 0.35, 'sawtooth', 0.12, 450); ton(500, 0.05, 0.3, 'sine', 0.15, 800); } }
   };
 })();
 function mow(tekst) {
@@ -436,7 +460,7 @@ function prysznicRuch(e) {
     setTimeout(() => k.remove(), 450);
   }
 
-  if (teraz - (prysznicRuch.dzwiek || 0) > 110) { prysznicRuch.dzwiek = teraz; Dzwiek.woda(); }
+  if (!Dzwiek.petlaStart('prysznic', 0.6) && teraz - (prysznicRuch.dzwiek || 0) > 110) { prysznicRuch.dzwiek = teraz; Dzwiek.woda(); }
 
   // zmywanie piany w punkcie pod prysznicem (przeliczenie na współrzędne SVG)
   const r = $('piana').getBoundingClientRect();
@@ -457,13 +481,14 @@ function prysznicRuch(e) {
     Dzwiek.naprawa();
     $('dalejMycie').style.display = 'inline-block';
     myje = false;
+    Dzwiek.petlaStop('prysznic');
     $('prysznic').style.display = 'none';
   }
 }
 
 $('mycie').addEventListener('pointerdown', e => { if (e.target.closest('button')) return; myje = true; prysznicRuch(e); });
 $('mycie').addEventListener('pointermove', prysznicRuch);
-['pointerup', 'pointercancel'].forEach(t => $('mycie').addEventListener(t, () => { myje = false; $('prysznic').style.display = 'none'; }));
+['pointerup', 'pointercancel'].forEach(t => $('mycie').addEventListener(t, () => { myje = false; Dzwiek.petlaStop('prysznic'); $('prysznic').style.display = 'none'; }));
 $('dalejMycie').addEventListener('click', () => { Dzwiek.klik(); pokaz('farbowanie'); startFarbowanie(); });
 
 // ---------- ekran 4: farbowanie ----------
@@ -521,6 +546,7 @@ function startFryzura() {
       box.querySelectorAll('.opcja').forEach(x => x.classList.remove('wybrany'));
       b.classList.add('wybrany');
       Dzwiek.snip();
+      setTimeout(() => Dzwiek.suszarka(), 700);
       stan.fryzura = true;
       $('dalejFryzura').style.display = 'inline-block';
     });
