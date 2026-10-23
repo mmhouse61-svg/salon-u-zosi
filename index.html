@@ -236,34 +236,98 @@ function mow(tekst) {
 }
 
 // ---------- rysunki (SVG, do podmiany na rysunki Róży) ----------
-function postac({ skora, wlosy, ubranie, fryzura, wlosyKolor }) {
+function ciemniej(hex, f) {
+  const n = parseInt(hex.slice(1), 16);
+  const k = c => Math.max(0, Math.min(255, Math.round(c * f)));
+  return `rgb(${k(n >> 16 & 255)},${k(n >> 8 & 255)},${k(n & 255)})`;
+}
+function postac({ skora, wlosy, ubranie, fryzura, wlosyKolor, oko = '#5a3a22', rzesy = false, dodatek = [] }) {
   const w = wlosyKolor || wlosy;
-  const wlosyTyl = {
-    krotkie: `<ellipse cx="100" cy="78" rx="52" ry="48" fill="${w}"/>`,
-    dlugie:  `<ellipse cx="100" cy="85" rx="58" ry="62" fill="${w}"/><rect x="42" y="85" width="116" height="70" rx="30" fill="${w}"/>`,
-    kucyki:  `<circle cx="42" cy="78" r="20" fill="${w}"/><circle cx="158" cy="78" r="20" fill="${w}"/><ellipse cx="100" cy="76" rx="50" ry="44" fill="${w}"/>`,
-    kok:     `<circle cx="100" cy="30" r="22" fill="${w}"/><ellipse cx="100" cy="78" rx="50" ry="44" fill="${w}"/>`,
-    warkocze:`<rect x="42" y="80" width="22" height="95" rx="11" fill="${w}"/><rect x="136" y="80" width="22" height="95" rx="11" fill="${w}"/><ellipse cx="100" cy="76" rx="50" ry="44" fill="${w}"/>`,
-    irokez:  `<path d="M78 62 L88 6 L100 48 L112 6 L122 62Z" fill="${w}"/>`,
+  const wc = ciemniej(w, 0.68), sc = ciemniej(skora, 0.82), uc = ciemniej(ubranie, 0.75);
+  const gum = '#ff6fa5';
+  const obrys = `stroke="${wc}" stroke-width="3" stroke-linejoin="round"`;
+  const polysk = (d) => `<path d="${d}" stroke="#fff" stroke-opacity=".45" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+
+  // włosy za głową
+  const tyl = {
+    krotkie: `<ellipse cx="100" cy="80" rx="53" ry="50" fill="${w}" ${obrys}/>`,
+    dlugie:  `<path d="M44 92 Q38 36 100 30 Q162 36 156 92 L162 176 Q162 192 144 190 L56 190 Q38 192 38 176Z" fill="${w}" ${obrys}/>`,
+    kucyki:  `<path d="M58 66 Q24 54 20 96 Q18 134 38 156 Q50 130 56 96Z" fill="${w}" ${obrys}/>
+              <path d="M142 66 Q176 54 180 96 Q182 134 162 156 Q150 130 144 96Z" fill="${w}" ${obrys}/>
+              <ellipse cx="100" cy="80" rx="51" ry="48" fill="${w}" ${obrys}/>`,
+    kok:     `<circle cx="100" cy="30" r="23" fill="${w}" ${obrys}/>
+              <ellipse cx="100" cy="80" rx="51" ry="48" fill="${w}" ${obrys}/>
+              <rect x="82" y="46" width="36" height="9" rx="4.5" fill="${gum}"/>`,
+    warkocze:[-1, 1].map(s => [0, 1, 2, 3].map(i => `<ellipse cx="${100 + s * 56}" cy="${112 + i * 20}" rx="11" ry="13" fill="${w}" ${obrys}/>`).join('') +
+              `<circle cx="${100 + s * 56}" cy="176" r="7" fill="${gum}"/>`).join('') +
+              `<ellipse cx="100" cy="80" rx="51" ry="48" fill="${w}" ${obrys}/>`,
+    irokez:  ``,
     lysy:    ``
   }[fryzura];
+
+  // włosy przed głową (grzywka, irokez)
+  const grzywka = `<path d="M50 98 Q42 36 100 34 Q158 36 150 98 Q144 72 122 64 Q104 82 84 66 Q60 74 50 98Z" fill="${w}" ${obrys}/>` +
+    polysk('M68 54 Q92 40 120 50');
+  const przod = {
+    krotkie: grzywka, dlugie: grzywka, kucyki: grzywka, kok: grzywka, warkocze: grzywka,
+    irokez: `<path d="M56 88 Q56 52 100 50 Q144 52 144 88 Q130 72 100 70 Q70 72 56 88Z" fill="${w}" opacity=".4"/>
+             <path d="M74 68 L82 14 L93 52 L100 4 L107 52 L118 14 L126 68Z" fill="${w}" ${obrys}/>` + polysk('M86 40 L88 24'),
+    lysy: `<path d="M52 104 Q46 84 58 74 Q56 92 62 108Z" fill="${w}" ${obrys}/>
+           <path d="M148 104 Q154 84 142 74 Q144 92 138 108Z" fill="${w}" ${obrys}/>
+           <ellipse cx="84" cy="62" rx="13" ry="6" fill="#fff" opacity=".45" transform="rotate(-25 84 62)"/>`
+  }[fryzura];
+
+  const oczko = (cx) => `
+    <ellipse cx="${cx}" cy="100" rx="10" ry="12" fill="#fff" stroke="${ciemniej(skora, .6)}" stroke-width="1.5"/>
+    <circle cx="${cx}" cy="102" r="7.5" fill="${oko}"/><circle cx="${cx}" cy="102" r="3.8" fill="#1d1d1d"/>
+    <circle cx="${cx + 3}" cy="98" r="3" fill="#fff"/><circle cx="${cx - 2.5}" cy="105" r="1.4" fill="#fff"/>
+    ${rzesy ? `<path d="M${cx - 10} 96 Q${cx - 13} 93 ${cx - 14} 89 M${cx + 10} 96 Q${cx + 13} 93 ${cx + 14} 89" stroke="#2a1a14" stroke-width="2.5" fill="none" stroke-linecap="round"/>` : ''}`;
+  const brwi = (cx, s) => `<path d="M${cx - 10} 86 Q${cx} ${82 - s} ${cx + 10} 87" stroke="${wc}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+
+  const dod = (n) => dodatek.includes(n);
   return `
-    ${wlosyTyl}
-    <rect x="55" y="150" width="90" height="100" rx="30" fill="${ubranie}"/>
-    <circle cx="100" cy="95" r="45" fill="${skora}"/>
-    ${(fryzura === 'lysy' || fryzura === 'irokez') ? '' : `<path d="M55 90 Q100 25 145 90 Q125 62 100 62 Q75 62 55 90Z" fill="${w}"/>`}
-    <circle cx="84" cy="98" r="5" fill="#333"/><circle cx="116" cy="98" r="5" fill="#333"/>
-    <circle cx="76" cy="112" r="7" fill="#ff9aa8" opacity=".6"/><circle cx="124" cy="112" r="7" fill="#ff9aa8" opacity=".6"/>
-    <path d="M86 116 Q100 130 114 116" stroke="#b03a5b" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+    ${tyl}
+    <!-- ręce -->
+    <path d="M60 170 Q38 182 40 224 L62 226 Q66 192 76 178Z" fill="${ubranie}" stroke="${uc}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M140 170 Q162 182 160 224 L138 226 Q134 192 124 178Z" fill="${ubranie}" stroke="${uc}" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="51" cy="232" r="11" fill="${skora}" stroke="${sc}" stroke-width="2.5"/>
+    <circle cx="149" cy="232" r="11" fill="${skora}" stroke="${sc}" stroke-width="2.5"/>
+    <!-- szyja i tułów -->
+    <rect x="88" y="132" width="24" height="32" rx="9" fill="${sc}"/>
+    <path d="M56 254 Q54 170 100 162 Q146 170 144 254Z" fill="${ubranie}" stroke="${uc}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M84 164 L100 184 L116 164 Q100 170 84 164Z" fill="#fff" opacity=".92"/>
+    <circle cx="100" cy="204" r="3.5" fill="${uc}"/><circle cx="100" cy="226" r="3.5" fill="${uc}"/>
+    <!-- uszy i głowa -->
+    <circle cx="54" cy="104" r="9" fill="${skora}" stroke="${sc}" stroke-width="2.5"/>
+    <circle cx="146" cy="104" r="9" fill="${skora}" stroke="${sc}" stroke-width="2.5"/>
+    ${dod('kolczyki') ? `<circle cx="54" cy="116" r="4" fill="#ffc83d" stroke="#d9a21a" stroke-width="1.5"/><circle cx="146" cy="116" r="4" fill="#ffc83d" stroke="#d9a21a" stroke-width="1.5"/>` : ''}
+    <ellipse cx="100" cy="98" rx="47" ry="45" fill="${skora}" stroke="${sc}" stroke-width="3"/>
+    <!-- twarz -->
+    ${brwi(82, 3)}${brwi(118, 3)}
+    ${oczko(82)}${oczko(118)}
+    <circle cx="70" cy="118" r="8" fill="#ff8fa3" opacity=".5"/><circle cx="130" cy="118" r="8" fill="#ff8fa3" opacity=".5"/>
+    <path d="M96 113 Q100 118 104 113" stroke="${sc}" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M88 123 Q100 140 112 123 Q100 127 88 123Z" fill="#c0395f" stroke="#a02c4e" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M91 124 Q100 128 109 124 L108 127 Q100 131 92 127Z" fill="#fff"/>
+    ${dod('wasy') ? `<path d="M84 121 Q92 112 100 118 Q108 112 116 121 Q108 124 100 121 Q92 124 84 121Z" fill="${wc}" stroke="${ciemniej(w, .5)}" stroke-width="1.5"/>` : ''}
+    ${przod}
+    ${dod('okulary') ? `<circle cx="82" cy="101" r="14" fill="#cfe8ff" fill-opacity=".3" stroke="#3b3b3b" stroke-width="3"/><circle cx="118" cy="101" r="14" fill="#cfe8ff" fill-opacity=".3" stroke="#3b3b3b" stroke-width="3"/><path d="M96 100 H104 M68 98 L56 96 M132 98 L144 96" stroke="#3b3b3b" stroke-width="3" fill="none"/>` : ''}
+    ${dod('kokarda') ? `<g transform="translate(136 52)"><path d="M0 0 L-18 -12 L-18 12Z M0 0 L18 -12 L18 12Z" fill="${gum}" stroke="#d94c80" stroke-width="2.5" stroke-linejoin="round"/><circle r="5" fill="#ffb3cf" stroke="#d94c80" stroke-width="2"/></g>` : ''}
+    ${fryzura === 'kucyki' ? `<circle cx="56" cy="74" r="8" fill="${gum}"/><circle cx="144" cy="74" r="8" fill="${gum}"/>` : ''}`;
 }
 // fartuszek Zosi: nagroda na końcu zmienia mu kolor i dodaje gwiazdkę
 const FARTUSZKI = ['#ffffff', '#ffd1e6', '#c8f0ff', '#fff3a8', '#d9c8ff'];
 let fartuszek = { nr: 0, gwiazdka: false };
 function zosia() {
-  return postac({ skora: '#ffd9b8', wlosy: '#7a3b1d', ubranie: '#7ad7c0', fryzura: 'dlugie' }) +
-    `<path d="M70 165 H130 L135 245 H65Z" fill="${FARTUSZKI[fartuszek.nr]}" stroke="#ff8fb8" stroke-width="4"/>
-     <circle cx="100" cy="200" r="7" fill="#ff8fb8"/>
-     ${fartuszek.gwiazdka ? '<text x="100" y="228" font-size="26" text-anchor="middle">⭐</text>' : ''}`;
+  return postac({ skora: '#ffd9b8', wlosy: '#7a3b1d', ubranie: '#7ad7c0', fryzura: 'dlugie', oko: '#3a7d5a', rzesy: true, dodatek: ['kokarda'] }) +
+    `<path d="M78 174 L92 160 M122 174 L108 160" stroke="#ff8fb8" stroke-width="4" stroke-linecap="round"/>
+     <path d="M72 174 H128 L136 252 H64Z" fill="${FARTUSZKI[fartuszek.nr]}" stroke="#ff8fb8" stroke-width="4" stroke-linejoin="round"/>
+     <rect x="82" y="214" width="36" height="26" rx="7" fill="none" stroke="#ff8fb8" stroke-width="3"/>
+     <g transform="translate(38 222) rotate(-25)" stroke-linecap="round">
+       <line x1="0" y1="0" x2="9" y2="-30" stroke="#9a9aa8" stroke-width="4"/><line x1="9" y1="0" x2="0" y2="-30" stroke="#9a9aa8" stroke-width="4"/>
+       <circle cx="0" cy="6" r="6" fill="none" stroke="#e0527f" stroke-width="3"/><circle cx="9" cy="6" r="6" fill="none" stroke="#e0527f" stroke-width="3"/>
+     </g>
+     ${fartuszek.gwiazdka ? '<text x="100" y="204" font-size="26" text-anchor="middle">⭐</text>' : ''}`;
 }
 function odswiezZosie() { document.querySelectorAll('[data-zosia]').forEach(s => s.innerHTML = zosia()); }
 
@@ -290,11 +354,11 @@ document.querySelectorAll('.kot').forEach(k => {
   });
 });
 const KLIENCI = [
-  { imie: 'Ola',   tekst: 'Dzień dobry! Chcę ładną fryzurę!',       opis: { skora:'#ffd9b8', wlosy:'#e8b04a', ubranie:'#ff9f43', fryzura:'kucyki' } },
-  { imie: 'Pan Karol', tekst: 'Dzień dobry! Przydałoby się strzyżenie.', opis: { skora:'#f2c29b', wlosy:'#4a4a4a', ubranie:'#5b8def', fryzura:'krotkie' } },
-  { imie: 'Pani Ewa',  tekst: 'Dzień dobry! Poproszę nowy kolor.',    opis: { skora:'#ffd9b8', wlosy:'#b8561f', ubranie:'#c06bd9', fryzura:'dlugie' } },
-  { imie: 'Franek',    tekst: 'Cześć! Zrób mi fajną fryzurę!',        opis: { skora:'#e8b48a', wlosy:'#2c1a10', ubranie:'#44c26b', fryzura:'krotkie' } },
-  { imie: 'Dziadek Stefan', tekst: 'Dzień dobry! Co tu zrobić z tą łysinką?', opis: { skora:'#f2c29b', wlosy:'#cfcfcf', ubranie:'#a0522d', fryzura:'lysy' } }
+  { imie: 'Ola',   tekst: 'Dzień dobry! Chcę ładną fryzurę!',       opis: { skora:'#ffd9b8', wlosy:'#e8b04a', ubranie:'#ff9f43', fryzura:'kucyki', oko:'#2e86de', rzesy:true } },
+  { imie: 'Pan Karol', tekst: 'Dzień dobry! Przydałoby się strzyżenie.', opis: { skora:'#f2c29b', wlosy:'#4a4a4a', ubranie:'#5b8def', fryzura:'krotkie', oko:'#5a3a22', dodatek:['wasy'] } },
+  { imie: 'Pani Ewa',  tekst: 'Dzień dobry! Poproszę nowy kolor.',    opis: { skora:'#ffd9b8', wlosy:'#b8561f', ubranie:'#c06bd9', fryzura:'dlugie', oko:'#3a8f5a', rzesy:true, dodatek:['kolczyki'] } },
+  { imie: 'Franek',    tekst: 'Cześć! Zrób mi fajną fryzurę!',        opis: { skora:'#e8b48a', wlosy:'#2c1a10', ubranie:'#44c26b', fryzura:'krotkie', oko:'#5a3a22' } },
+  { imie: 'Dziadek Stefan', tekst: 'Dzień dobry! Co tu zrobić z tą łysinką?', opis: { skora:'#f2c29b', wlosy:'#cfcfcf', ubranie:'#a0522d', fryzura:'lysy', oko:'#4a6fa5', dodatek:['okulary','wasy'] } }
 ];
 
 document.querySelectorAll('[data-zosia]').forEach(s => s.innerHTML = zosia());
