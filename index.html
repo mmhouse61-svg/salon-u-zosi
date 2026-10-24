@@ -416,6 +416,12 @@ const SKLEP = [
   { id: 'zloto',    typ: 'kolor', ikona: '🥇', nazwa: 'Złoty',   cena: 8,  kolor: '#d4af37', tlo: '#d4af37' },
   { id: 'tecza',    typ: 'kolor', ikona: '🌈', nazwa: 'Tęcza',   cena: 12, kolor: 'tecza',   tlo: 'linear-gradient(135deg,#ff4d6d,#ffd93d,#3ddc84,#35a7ff,#9b5de5)' },
   { id: 'brokat',   typ: 'kolor', ikona: '✨', nazwa: 'Brokat',  cena: 16, kolor: 'brokat',  tlo: 'radial-gradient(circle at 30% 30%,#fff 0 8%,transparent 10%),radial-gradient(circle at 70% 60%,#fff 0 8%,transparent 10%),#ff8fb8' },
+  { id: 'srebro',   typ: 'kolor', ikona: '🥈', nazwa: 'Srebrny', cena: 6,  kolor: '#c0c0c0', tlo: '#c0c0c0' },
+  { id: 'zachod',   typ: 'kolor', ikona: '🌅', nazwa: 'Zachód',  cena: 14, kolor: 'zachod',  tlo: 'linear-gradient(135deg,#ff6b6b,#ffa94d,#ffd43b,#f06595,#845ef7)' },
+  { id: 'galaktyka', typ: 'kolor', ikona: '🌌', nazwa: 'Galaktyka', cena: 18, kolor: 'galaktyka', tlo: 'linear-gradient(135deg,#1b1464,#5f27cd,#0abde3,#f368e0)' },
+  { id: 'kwiatek',  typ: 'kot',   ikona: '🌸', nazwa: 'Kwiatek', cena: 5 },
+  { id: 'czapka',   typ: 'kot',   ikona: '🎓', nazwa: 'Czapka',  cena: 9 },
+  { id: 'rozek',    typ: 'kot',   ikona: '🦄', nazwa: 'Różek',   cena: 15 },
   { id: 'kokardka', typ: 'kot',   ikona: '🎀', nazwa: 'Kokardka', cena: 6 },
   { id: 'cylinder', typ: 'kot',   ikona: '🎩', nazwa: 'Cylinder', cena: 10 },
   { id: 'korona',   typ: 'kot',   ikona: '👑', nazwa: 'Korona',   cena: 12 }
@@ -466,6 +472,11 @@ function narysujSklep() {
 let sklepWroc = 'start';
 function otworzSklep(skad) { sklepWroc = skad; sklepWejscie = true; narysujSklep(); pokaz('sklep'); }
 
+const GRADIENTY = {   // magiczne farby z przejściem kolorów (od czubka głowy w dół)
+  tecza: ['#ff4d6d', '#ff9f1c', '#ffd93d', '#3ddc84', '#35a7ff', '#9b5de5'],
+  zachod: ['#ff6b6b', '#ffa94d', '#ffd43b', '#f06595', '#845ef7'],
+  galaktyka: ['#1b1464', '#5f27cd', '#0abde3', '#f368e0', '#1b1464']
+};
 // klient = ciało (img) + włosy (canvas, tyl i przód) + gumki (img)
 let licznikMalowania = 0;
 function malujKlienta(el, opis) {
@@ -489,9 +500,10 @@ function malujKlienta(el, opis) {
     const c = t.getContext('2d');
     c.drawImage(wl, 0, 0, SZER, WYS);
     c.globalCompositeOperation = 'multiply';  // szara warstwa włosów * kolor = zafarbowane włosy z cieniami
-    if (opis.kolor === 'tecza') {
+    const gr = GRADIENTY[opis.kolor];
+    if (gr) {
       const g = c.createLinearGradient(0, 40, 0, 520);
-      ['#ff4d6d', '#ff9f1c', '#ffd93d', '#3ddc84', '#35a7ff', '#9b5de5'].forEach((k, i) => g.addColorStop(i / 5, k));
+      gr.forEach((k, i) => g.addColorStop(i / (gr.length - 1), k));
       c.fillStyle = g;
     } else c.fillStyle = opis.kolor === 'brokat' ? '#ff8fb8' : opis.kolor;
     c.fillRect(0, 0, SZER, WYS);
