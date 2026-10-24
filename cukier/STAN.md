@@ -1,5 +1,5 @@
 # Stan projektu: Gra "Salon u Róży"
-Zaktualizowano: 2026-10-24 19:01
+Zaktualizowano: 2026-10-24 19:05
 
 ## Kierunek
 Pierwsza gra na iPada 6-letniej Róży (rodzinny projekt, nauka i zabawa, nie biznes). Cel: prosta, grywalna gra o salonie fryzjerskim, którą Róża współtworzy swoimi pomysłami.
@@ -12,11 +12,11 @@ Pierwsza gra na iPada 6-letniej Róży (rodzinny projekt, nauka i zabawa, nie bi
 - Aktualizacja: edytuj index.html, `git commit`, `git push` (zgoda na gh w `.claude/settings.local.json`).
 - Nowe grafiki: oryginały w `grafiki/` (poza gitem), skrypt `narzedzia/przygotuj_grafiki.py` (wymaga pillow, numpy, scipy).
 - Rozgrywka (SW v10): monety (2 za gwiazdkę), zapis w localStorage, sklepik (farby Złoty/Tęcza/Brokat, ozdoby kota kokardka/cylinder/korona), życzenia klientów (kolor + fryzura, +3 monety za trafienie). Użytkownik potwierdził: ekrany działają na iPadzie poziomo.
-- Ruch (SW v13): postacie oddychają, podskok po dotknięciu, iskry, bańki (mycie), fala koloru, nożyczki + dmuchanie, taniec w finale, ptaki/chmury w oknie, lampy, zegar. Sklepik: 6 farb i 6 ozdób kota, reset postępów (mały napis + „Na pewno?”).
+- Ruch (SW v13): postacie oddychają, podskok po dotknięciu, iskry, bańki (mycie), fala koloru, nożyczki + dmuchanie, taniec w finale, ptaki/chmury w oknie, lampy, zegar. Sklepik: 10 farb i 10 ozdób kota (SW v14, komplet ok. 250 monet), reset postępów (mały napis + „Na pewno?”).
 - Nowe rzeczy (sklepik, życzenia, animacje) oglądane tylko na zrzutach z przeglądarki; Róża ich jeszcze nie widziała.
 
 ## Następny krok
-1. Róża gra ~15 min na iPadzie (odświeżyć/zamknąć i otworzyć grę, SW v13), spisać uwagi: czy animacje są OK (za mocne/za słabe), co kupuje, czy rozumie etykietę życzenia, czy ozdoba siedzi na głowie kota.
+1. Róża gra ~15 min na iPadzie (odświeżyć/zamknąć i otworzyć grę, SW v14), spisać uwagi: czy animacje są OK (za mocne/za słabe), co kupuje, czy rozumie etykietę życzenia, czy ozdoba siedzi na głowie kota.
 2. Poprawki z jej uwag (tempo i siła efektów, pozycja okna/lamp/zegara, ceny).
 3. Potem: prawdziwy Konkurs Fryzur, Koziołki z Ratusza, Zosia w większym rozmiarze.
 
@@ -34,6 +34,7 @@ Pierwsza gra na iPada 6-letniej Róży (rodzinny projekt, nauka i zabawa, nie bi
 - 2026-10-23 — Dźwięki: próbki ElevenLabs w repo (snd/), ok. 100 kredytów — żywszy salon dla Róży.
 - 2026-10-23 — Rozgrywka: monety + sklepik kosmetyczny + życzenia klientów, bez kar i liczników czasu — grywalność dla 6-latki.
 - 2026-10-24 — Animacje: czysty kod, bez nowych grafik — Róża mówi, że gra jest nudna.
+- 2026-10-24 — Sklepik +4 farby i +4 ozdoby (łącznie po 10) — prośba użytkownika, ozdoby jako emoji.
 - 2026-10-24 — Reset postępów w sklepiku z potwierdzeniem — start od zera bez ryzyka przypadkowego skasowania.
 
 ## Parking pomysłów
@@ -45,3 +46,4 @@ Pierwsza gra na iPada 6-letniej Róży (rodzinny projekt, nauka i zabawa, nie bi
 ## Blokery / pytania do użytkownika
 - Konkurs fryzur: osobna rozgrywka, czy zostaje napis w finale?
 - Strażnik: w sesji 24.10 dodano animacje, 6 towarów i reset na prośbę użytkownika (powód: uwaga Róży), ale nadal nic nie testowane z Różą na żywo. Kolejne dodatki tylko po jej uwagach. Wcześniej dodano dwie warstwy rozgrywki (sklepik, życzenia) na polecenie użytkownika, ale Róża jeszcze ich nie widziała. Kolejne dodatki tylko po jej uwagach.
+- Strażnik (19:05): trzeci dodatek z rzędu (sklepik +8 towarów) bez testu z Różą. Zero nowych funkcji, dopóki nie przyjdą jej uwagi.

@@ -39,3 +39,10 @@
 - Decyzje: animacje na prośbę Róży („nudne”), czysty kod bez nowych grafik; farby z przejściem kolorów w słowniku GRADIENTY; reset schowany jako mały napis + potwierdzenie (ochrona przed 6-latką).
 - Niedokończone / ryzyka: nic nie klikane na żywo (tylko składnia JS); animacje mogą być za mocne/za słabe na iPadzie; położenie okna/lamp/zegara liczone z obrazka tła; „blokery” zrozumiane jako „bajery”.
 - Następny krok: Róża gra ~15 min, spisać uwagi, poprawić tempo/siłę efektów.
+
+## 2026-10-24 19:05 — Sklepik: 4 nowe farby i 4 ozdoby kota
+- Zrobione: farby Miętowy 7, Lawenda 7, Ocean 13, Wiśnia 15 (Ocean i Wiśnia z przejściem kolorów w GRADIENTY); ozdoby kota Gwiazdka 7, Serduszko 8, Motylek 11, Tęcza 14. Wypchnięte na GitHub Pages.
+- Zmienione pliki: index.html, sw.js (v14).
+- Decyzje: dodatek na prośbę użytkownika mimo braku testu z Różą (tani, odwracalny); ozdoby jako emoji.
+- Niedokończone / ryzyka: nic nie klikane na żywo (tylko składnia JS); sklepik ma 10 farb i 10 ozdób, komplet to ok. 250 monet.
+- Następny krok: Róża gra ~15 min, spisać uwagi; do tego czasu bez nowych dodatków.
