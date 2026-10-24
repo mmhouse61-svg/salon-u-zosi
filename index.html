@@ -218,6 +218,14 @@
   @keyframes blask { 0%,100% { opacity: .35; transform: translate(-50%, -50%) scale(.9); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } }
   .zegar { position: absolute; left: 71.5%; top: 18.7%; width: .3%; height: 3.6%; margin-left: -.15%; background: #e0457b; border-radius: 4px; transform-origin: 50% 100%; pointer-events: none; animation: zegarek 12s steps(12) infinite; }
   @keyframes zegarek { to { transform: rotate(360deg); } }
+  /* reset postępów (z pytaniem, żeby nie skasować przez przypadek) */
+  #resetBtn { margin: 0 0 3vh; border: 0; background: none; color: #8a6a7d; font: inherit; font-size: clamp(14px, 2vw, 22px); text-decoration: underline; cursor: pointer; padding: .6em 1em; }
+  #resetPyt { position: fixed; inset: 0; z-index: 30; background: rgba(90, 42, 71, .6); display: none; align-items: center; justify-content: center; }
+  #resetPyt.widoczny { display: flex; }
+  #resetPyt .pudelko { background: #fff; border: 5px solid var(--rozowy); border-radius: 28px; padding: 3vh 4vw; text-align: center; max-width: 80vw; animation: wskok .3s; }
+  #resetPyt p { margin: 0 0 2vh; font-size: clamp(20px, 3.2vw, 38px); font-weight: bold; }
+  #resetPyt .guzik { font-size: clamp(22px, 4vw, 44px); margin-bottom: 2vh; }
+  #resetTak { display: block; margin: 0 auto; border: 0; background: none; color: #8a6a7d; font: inherit; font-size: clamp(14px, 2vw, 22px); text-decoration: underline; cursor: pointer; padding: .6em 1em; }
 </style>
 </head>
 <body>
@@ -297,6 +305,14 @@
   <h3>Ozdoby dla kotka</h3>
   <div class="towary" id="towaryKot"></div>
   <button class="guzik" id="wrocSklep">⬅ Wróć</button>
+  <div><button id="resetBtn">🗑️ Zacznij grę od zera</button></div>
+  <div id="resetPyt">
+    <div class="pudelko">
+      <p>Na pewno? Znikną wszystkie monety i zakupy.</p>
+      <button class="guzik" id="resetNie">Nie, zostaw</button>
+      <button id="resetTak">Tak, od zera</button>
+    </div>
+  </div>
 </section>
 
 <div id="miau">Miau! 🐾</div>
@@ -903,6 +919,15 @@ $('nastepny').addEventListener('click', () => {
 $('sklepStart').addEventListener('click', () => { Dzwiek.odblokuj(); Dzwiek.klik(); otworzSklep('start'); });
 $('sklepikBtn').addEventListener('click', () => { Dzwiek.klik(); otworzSklep('koniec'); });
 $('wrocSklep').addEventListener('click', () => { Dzwiek.klik(); pokaz(sklepWroc); });
+$('resetBtn').addEventListener('click', () => { Dzwiek.klik(); $('resetPyt').classList.add('widoczny'); });
+$('resetNie').addEventListener('click', () => { Dzwiek.klik(); $('resetPyt').classList.remove('widoczny'); });
+$('resetTak').addEventListener('click', () => {   // nowa gra: zero monet, brak zakupów, pierwszy fartuszek
+  Object.assign(zapis, { monety: 0, kupione: [], kot: null, fartuszek: 0 });
+  fartuszek.nr = 0; fartuszek.gwiazdka = false;
+  zapisz(); odswiezMonety(); odswiezKota(); narysujSklep();
+  $('resetPyt').classList.remove('widoczny');
+  Dzwiek.naprawa();
+});
 // dotknięcie klienta albo Zosi = podskok i iskry
 document.querySelectorAll('.klient').forEach(k => {
   if (k.id === 'mycieKlient') return;          // tam przeciąga się prysznic
