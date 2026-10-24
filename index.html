@@ -435,6 +435,14 @@ const SKLEP = [
   { id: 'srebro',   typ: 'kolor', ikona: '🥈', nazwa: 'Srebrny', cena: 6,  kolor: '#c0c0c0', tlo: '#c0c0c0' },
   { id: 'zachod',   typ: 'kolor', ikona: '🌅', nazwa: 'Zachód',  cena: 14, kolor: 'zachod',  tlo: 'linear-gradient(135deg,#ff6b6b,#ffa94d,#ffd43b,#f06595,#845ef7)' },
   { id: 'galaktyka', typ: 'kolor', ikona: '🌌', nazwa: 'Galaktyka', cena: 18, kolor: 'galaktyka', tlo: 'linear-gradient(135deg,#1b1464,#5f27cd,#0abde3,#f368e0)' },
+  { id: 'mietowy',  typ: 'kolor', ikona: '🍃', nazwa: 'Miętowy', cena: 7,  kolor: '#7fe0c0', tlo: '#7fe0c0' },
+  { id: 'lawenda',  typ: 'kolor', ikona: '💜', nazwa: 'Lawenda', cena: 7,  kolor: '#b79cf2', tlo: '#b79cf2' },
+  { id: 'ocean',    typ: 'kolor', ikona: '🌊', nazwa: 'Ocean',   cena: 13, kolor: 'ocean',   tlo: 'linear-gradient(135deg,#0077b6,#00b4d8,#90e0ef,#48cae4)' },
+  { id: 'wisnia',   typ: 'kolor', ikona: '🍒', nazwa: 'Wiśnia',  cena: 15, kolor: 'wisnia',  tlo: 'linear-gradient(135deg,#ff0a54,#ff5c8a,#ffb3c6,#c9184a)' },
+  { id: 'gwiazdka', typ: 'kot',   ikona: '⭐', nazwa: 'Gwiazdka', cena: 7 },
+  { id: 'serce',    typ: 'kot',   ikona: '💖', nazwa: 'Serduszko', cena: 8 },
+  { id: 'motyl',    typ: 'kot',   ikona: '🦋', nazwa: 'Motylek', cena: 11 },
+  { id: 'teczka',   typ: 'kot',   ikona: '🌈', nazwa: 'Tęcza',   cena: 14 },
   { id: 'kwiatek',  typ: 'kot',   ikona: '🌸', nazwa: 'Kwiatek', cena: 5 },
   { id: 'czapka',   typ: 'kot',   ikona: '🎓', nazwa: 'Czapka',  cena: 9 },
   { id: 'rozek',    typ: 'kot',   ikona: '🦄', nazwa: 'Różek',   cena: 15 },
@@ -491,6 +499,8 @@ function otworzSklep(skad) { sklepWroc = skad; sklepWejscie = true; narysujSklep
 const GRADIENTY = {   // magiczne farby z przejściem kolorów (od czubka głowy w dół)
   tecza: ['#ff4d6d', '#ff9f1c', '#ffd93d', '#3ddc84', '#35a7ff', '#9b5de5'],
   zachod: ['#ff6b6b', '#ffa94d', '#ffd43b', '#f06595', '#845ef7'],
+  ocean: ['#0077b6', '#00b4d8', '#90e0ef', '#48cae4', '#0077b6'],
+  wisnia: ['#ff0a54', '#ff5c8a', '#ffb3c6', '#c9184a', '#ff0a54'],
   galaktyka: ['#1b1464', '#5f27cd', '#0abde3', '#f368e0', '#1b1464']
 };
 // klient = ciało (img) + włosy (canvas, tyl i przód) + gumki (img)
