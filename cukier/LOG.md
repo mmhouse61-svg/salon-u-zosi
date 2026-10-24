@@ -32,3 +32,10 @@
 - Decyzje: nagrody kosmetyczne bez kar i liczników czasu (6-latka); zakupy bez nowych grafik (emoji + kod); użytkownik potwierdził, że ekrany działają na iPadzie poziomo.
 - Niedokończone / ryzyka: tylko zrzuty z przeglądarki, nie przeklikane na żywo; pozycja ozdoby na kocie ustawiona na oko; Róża nie widziała jeszcze sklepiku ani życzeń.
 - Następny krok: Róża gra ~15 min, spisać jej uwagi (co by kupiła, czy rozumie etykietę życzenia), poprawki.
+
+## 2026-10-24 19:01 — Animacje, nowe towary sklepiku, reset postępów
+- Zrobione: ożywienie gry (oddychające postacie, krok wejścia, podskok po dotknięciu, iskry, bańki w myciu, fala koloru, nożyczki + dmuchanie suszarki, taniec robota i klienta w finale, ptaki/chmury w oknie, blask lamp, sekundnik); sklepik +3 farby (Srebrny 6, Zachód 14, Galaktyka 18) i +3 ozdoby kota (Kwiatek 5, Czapka 9, Różek 15); reset postępów w sklepiku z pytaniem „Na pewno?”. Wszystko wypchnięte na GitHub Pages.
+- Zmienione pliki: index.html, sw.js (v13), cukier/STAN.md, cukier/LOG.md.
+- Decyzje: animacje na prośbę Róży („nudne”), czysty kod bez nowych grafik; farby z przejściem kolorów w słowniku GRADIENTY; reset schowany jako mały napis + potwierdzenie (ochrona przed 6-latką).
+- Niedokończone / ryzyka: nic nie klikane na żywo (tylko składnia JS); animacje mogą być za mocne/za słabe na iPadzie; położenie okna/lamp/zegara liczone z obrazka tła; „blokery” zrozumiane jako „bajery”.
+- Następny krok: Róża gra ~15 min, spisać uwagi, poprawić tempo/siłę efektów.
