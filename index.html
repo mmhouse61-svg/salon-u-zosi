@@ -149,6 +149,75 @@
   #wrocSklep { margin: 2.5vh 0 3vh; font-size: clamp(22px, 4vw, 44px); }
   .kolor.spec { border-color: #ffe27a; }
   #miau { position: absolute; font-size: clamp(18px, 2.6vw, 30px); background: #fff; border: 3px solid var(--rozowy); border-radius: 14px; padding: .1em .5em; display: none; pointer-events: none; }
+
+  /* ---------- ruch i animacje ---------- */
+  .ekran.aktywny { animation: wejscie .35s ease-out; }
+  @keyframes wejscie { from { opacity: 0; } }
+  @keyframes wskok { from { transform: scale(0); } 70% { transform: scale(1.15); } }
+  /* postacie oddychają, krok przy wejściu, podskok po dotknięciu, taniec, dmuchanie suszarki */
+  .klient > * { transform-origin: 50% 100%; animation: oddech 3.2s ease-in-out infinite; }
+  @keyframes oddech { 0%,100% { transform: scale(1) rotate(0); } 50% { transform: scale(1.012, 1.02) rotate(.6deg); } }
+  #mycieKlient:not(.podskok) > * { animation: none; }
+  #gosc.idzie > * { animation: krok .4s ease-in-out infinite; }
+  @keyframes krok { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-2.5%) rotate(2deg); } }
+  .klient.podskok > * { animation: skokK .6s ease-out; }
+  @keyframes skokK { 0%,100% { transform: translateY(0) scale(1); } 25% { transform: scale(1.06, .92); } 50% { transform: translateY(-5%) scale(.97, 1.05); } 75% { transform: scale(1.04, .96); } }
+  .klient.dmucha > * { animation: dmuch .18s ease-in-out infinite alternate; }
+  @keyframes dmuch { from { transform: rotate(-1.2deg) translateX(-.6%); } to { transform: rotate(1.2deg) translateX(.6%); } }
+  #koniecKlient.tanczy > * { animation: taniec .7s ease-in-out infinite; }
+  @keyframes taniec { 0%,100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-3%) rotate(4deg); } }
+  .zosia-s { transform-origin: 50% 100%; animation: zosiaS 4.5s ease-in-out infinite; }
+  @keyframes zosiaS { 0%,60%,100% { transform: translateY(0) scaleY(1); } 70% { transform: scaleY(.97); } 80% { transform: translateY(-3%) scaleY(1.03); } 90% { transform: scaleY(.98); } }
+  #start .zosia { transform-origin: 50% 100%; animation: bujaj 3s ease-in-out infinite; }
+  @keyframes bujaj { 0%,100% { transform: translateY(0) rotate(-1.5deg); } 50% { transform: translateY(-1.2vh) rotate(1.5deg); } }
+  .zosia-s.podskok, #start .zosia.podskok { animation: skokDuzy .6s ease-out; }
+  @keyframes skokDuzy { 40% { transform: translateY(-7%) rotate(-5deg); } 70% { transform: translateY(0) rotate(3deg); } }
+  #koniecZosia.klaszcze { animation: zosiaKlask .5s ease-in-out infinite; }
+  @keyframes zosiaKlask { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-4%) rotate(2deg); } }
+  .kot { transform-origin: 50% 100%; animation: kotOddech 2.8s ease-in-out infinite; }
+  @keyframes kotOddech { 0%,100% { transform: rotate(-1.5deg) scaleY(1); } 50% { transform: rotate(1.5deg) scaleY(1.03); } }
+  #robot { transform-origin: 50% 100%; }
+  #robot.tanczy { animation: tanczRobot .6s ease-in-out infinite alternate; }
+  @keyframes tanczRobot { from { transform: rotate(-6deg) translateY(0); } to { transform: rotate(6deg) translateY(-2vh); } }
+  /* guziki "Dalej" zachęcają pulsowaniem */
+  #graj, #dalej, #dalejMycie, .dalej-prawo { animation: puls 1.4s ease-in-out infinite; }
+  @keyframes puls { 50% { transform: scale(1.07); } }
+  #nastepny { animation: pulsSrodek 1.4s ease-in-out infinite; }
+  @keyframes pulsSrodek { 50% { transform: translateX(-50%) scale(1.07); } }
+  .kolor { animation: wskok .4s backwards; animation-delay: calc(var(--i, 0) * 50ms); }
+  .kolor.wybrany { animation: puls2 1s ease-in-out infinite; }
+  @keyframes puls2 { 50% { transform: scale(1.15); } }
+  #opcjeFryzur .opcja { animation: wskok .4s backwards; animation-delay: calc(var(--i, 0) * 70ms); }
+  .towar.wejdz { animation: wskok .45s backwards; animation-delay: calc(var(--i, 0) * 70ms); }
+  .towar.wyskok { animation: skokTowar .7s ease-out; }
+  @keyframes skokTowar { 30% { transform: translateY(-3vh) scale(1.1) rotate(-4deg); } 60% { transform: translateY(0) scale(.96); } }
+  .towar.nie { animation: nie .4s; }
+  @keyframes nie { 20%,60% { transform: translateX(-8px); } 40%,80% { transform: translateX(8px); } }
+  /* iskry, bańki, fala koloru, nożyczki */
+  .iskra { position: fixed; z-index: 20; pointer-events: none; font-size: clamp(22px, 3.4vw, 40px); animation: iskra .9s ease-out forwards; }
+  @keyframes iskra { from { transform: translate(-50%, -50%) scale(.3); opacity: 1; } to { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.2) rotate(var(--ob)); opacity: 0; } }
+  .banka { position: fixed; z-index: 20; pointer-events: none; font-size: clamp(22px, 3vw, 36px); animation: unosi 2.6s ease-out forwards; }
+  @keyframes unosi { from { transform: translate(-50%, 0) scale(.5); opacity: .9; } to { transform: translate(calc(-50% + var(--sw)), -28vh) scale(1.2); opacity: 0; } }
+  .fala { position: fixed; z-index: 5; width: 22vh; height: 22vh; border-radius: 50%; pointer-events: none; opacity: .6; animation: fala .8s ease-out forwards; }
+  @keyframes fala { from { transform: translate(-50%, -50%) scale(.2); opacity: .6; } to { transform: translate(-50%, -50%) scale(3); opacity: 0; } }
+  .nozyczki { position: fixed; z-index: 20; pointer-events: none; font-size: clamp(40px, 7vw, 80px); animation: tnij 1s ease-in-out forwards; }
+  @keyframes tnij {
+    0% { transform: translate(-120%, -50%) rotate(-30deg); opacity: 0; }
+    15% { opacity: 1; }
+    30% { transform: translate(60%, -90%) rotate(20deg); }
+    55% { transform: translate(-70%, 10%) rotate(-25deg); }
+    80% { transform: translate(60%, -20%) rotate(25deg); opacity: 1; }
+    100% { transform: translate(120%, -60%) rotate(40deg); opacity: 0; }
+  }
+  /* żywy salon: ptaki i chmury za oknem, lampy, sekundnik zegara */
+  .okno { position: absolute; left: 83.5%; top: 7%; width: 16.5%; height: 19%; overflow: hidden; pointer-events: none; }
+  .okno span { position: absolute; left: 100%; font-size: calc(max(100vw, 133.333vh) * .028); line-height: 1; animation: lot 9s linear infinite; }
+  .okno .chmura { font-size: calc(max(100vw, 133.333vh) * .045); opacity: .85; animation-duration: 22s; }
+  @keyframes lot { 0% { transform: translate(0, 0); } 50% { transform: translate(calc(max(100vw, 133.333vh) * -.11), -8%); } 100% { transform: translate(calc(max(100vw, 133.333vh) * -.22), 0); } }
+  .lampa { position: absolute; top: 12.5%; width: 14%; aspect-ratio: 1; background: radial-gradient(circle, rgba(255, 226, 122, .55), transparent 65%); pointer-events: none; animation: blask 3s ease-in-out infinite; }
+  @keyframes blask { 0%,100% { opacity: .35; transform: translate(-50%, -50%) scale(.9); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } }
+  .zegar { position: absolute; left: 71.5%; top: 18.7%; width: .3%; height: 3.6%; margin-left: -.15%; background: #e0457b; border-radius: 4px; transform-origin: 50% 100%; pointer-events: none; animation: zegarek 12s steps(12) infinite; }
+  @keyframes zegarek { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
@@ -300,6 +369,7 @@ const Dzwiek = (() => {
     stuk()    { ton(180, 0, 0.12, 'square', 0.25, 70); szum(0.08, 0.2, 1500); },
     bzzt()    { if (!graj('robot', 0.6)) ton(110, 0, 0.3, 'sawtooth', 0.12, 80); },
     naprawa() { [N.c, N.e, N.g, N.c2].forEach((n, i) => ton(n, i * 0.1, 0.3, 'triangle', 0.22)); },
+    hop()     { ton(520, 0, 0.12, 'triangle', 0.18, 900); ton(780, 0.08, 0.12, 'triangle', 0.14, 1100); },
     snip()    { if (graj('nozyczki', 0.8)) return; szum(0.05, 0.3, 4000); szum(0.05, 0.3, 4500); setTimeout(() => szum(0.05, 0.3, 4000), 90); },
     gwiazdka(i) { ton(N.c * Math.pow(1.26, i), 0, 0.4, 'triangle', 0.25); ton(N.c * Math.pow(1.26, i) * 2, 0.05, 0.3, 'sine', 0.12); },
     fanfara() { [N.c, N.e, N.g, N.c2, N.g, N.c2].forEach((n, i) => ton(n, i * 0.14, 0.35, 'square', 0.1)); graj('brawa', 0.8); },
@@ -364,18 +434,22 @@ function odswiezKota() {
   });
 }
 function narysujSklep() {
+  let licznikT = 0;
   [['kolor', 'towaryKolor'], ['kot', 'towaryKot']].forEach(([typ, boxId]) => {
     const box = $(boxId); box.innerHTML = '';
     SKLEP.filter(x => x.typ === typ).forEach(t => {
       const ma = zapis.kupione.includes(t.id);
       const b = document.createElement('button');
-      b.className = 'towar' + (ma ? ' kupiony' : '') + (typ === 'kot' && zapis.kot === t.id ? ' zalozony' : '') + (!ma && zapis.monety < t.cena ? ' brak' : '');
+      b.style.setProperty('--i', licznikT++);
+      b.className = 'towar' + (sklepWejscie ? ' wejdz' : '') + (ostatniKupiony === t.id ? ' wyskok' : '') + (ma ? ' kupiony' : '') + (typ === 'kot' && zapis.kot === t.id ? ' zalozony' : '') + (!ma && zapis.monety < t.cena ? ' brak' : '');
       b.innerHTML = '<span class="ik">' + t.ikona + '</span><span class="nz">' + t.nazwa + '</span><span class="cn">' + (ma ? (typ === 'kot' ? (zapis.kot === t.id ? '✅ założone' : 'założyć') : '✅ masz') : '🪙 ' + t.cena) + '</span>';
-      b.addEventListener('click', () => {
+      b.addEventListener('click', ev => {
         if (!ma) {
-          if (zapis.monety < t.cena) { Dzwiek.stuk(); return; }
+          if (zapis.monety < t.cena) { Dzwiek.stuk(); b.classList.remove('nie'); void b.offsetWidth; b.classList.add('nie'); return; }
           zapis.monety -= t.cena; zapis.kupione.push(t.id);
           Dzwiek.naprawa();
+          ostatniKupiony = t.id;
+          iskry(ev.clientX, ev.clientY, ['✨', '🪙', '💖'], 9, 14);
           if (typ === 'kot') zapis.kot = t.id;
         } else if (typ === 'kot') {
           zapis.kot = zapis.kot === t.id ? null : t.id;   // drugie stuknięcie zdejmuje ozdobę
@@ -387,9 +461,10 @@ function narysujSklep() {
       box.appendChild(b);
     });
   });
+  ostatniKupiony = null; sklepWejscie = false;
 }
 let sklepWroc = 'start';
-function otworzSklep(skad) { sklepWroc = skad; narysujSklep(); pokaz('sklep'); }
+function otworzSklep(skad) { sklepWroc = skad; sklepWejscie = true; narysujSklep(); pokaz('sklep'); }
 
 // klient = ciało (img) + włosy (canvas, tyl i przód) + gumki (img)
 let licznikMalowania = 0;
@@ -454,6 +529,8 @@ document.querySelectorAll('.kot').forEach(k => {
   k.innerHTML = '<img src="' + IMG + 'kot.webp" alt="kot">';
   k.addEventListener('click', () => {
     k.classList.remove('skok'); void k.offsetWidth; k.classList.add('skok');
+    setTimeout(() => k.classList.remove('skok'), 550);   // po skoku wraca spokojne kołysanie
+    iskrySrodek(k, .2, ['💖', '🐾'], 4, 8);
     Dzwiek.miau();
     const m = $('miau'), r = k.getBoundingClientRect();
     m.style.left = r.left + 'px'; m.style.top = (r.top - 40) + 'px'; m.style.display = 'block';
@@ -467,6 +544,63 @@ const KLIENCI = [
   { imie: 'Franek',    tekst: 'Cześć! Zrób mi fajną fryzurę!',        opis: { klient: 'franek', styl: 'krotkie', kolor: '#4a2c1a' } },
   { imie: 'Dziadek Stefan', tekst: 'Dzień dobry! Co tu zrobić z tą łysinką?', opis: { klient: 'stefan', styl: 'lysy', kolor: '#cfcfcf' } }
 ];
+
+// ---------- ruch i efekty (iskry, bańki, fala koloru, nożyczki, dmuchanie) ----------
+let ostatniKupiony = null, sklepWejscie = false;
+function iskry(x, y, znaki, n = 8, zasieg = 16) {
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement('div');
+    s.className = 'iskra';
+    s.textContent = znaki[i % znaki.length];
+    const kat = Math.random() * Math.PI * 2, d = (0.5 + Math.random() * 0.5) * zasieg * innerWidth / 100;
+    s.style.left = x + 'px'; s.style.top = y + 'px';
+    s.style.setProperty('--dx', Math.cos(kat) * d + 'px');
+    s.style.setProperty('--dy', Math.sin(kat) * d - 20 + 'px');
+    s.style.setProperty('--ob', (Math.random() * 120 - 60) + 'deg');
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 1000);
+  }
+}
+function iskrySrodek(el, fy, znaki, n, zasieg) {
+  const r = el.getBoundingClientRect();
+  iskry(r.left + r.width / 2, r.top + r.height * fy, znaki, n, zasieg);
+}
+function podskok(el) {
+  el.classList.remove('podskok'); void el.offsetWidth; el.classList.add('podskok');
+  setTimeout(() => el.classList.remove('podskok'), 650);
+}
+function banka(x, y) {
+  const b = document.createElement('div');
+  b.className = 'banka'; b.textContent = '🫧';
+  b.style.left = x + 'px'; b.style.top = y + 'px';
+  b.style.setProperty('--sw', (Math.random() * 80 - 40) + 'px');
+  document.body.appendChild(b);
+  setTimeout(() => b.remove(), 2700);
+}
+function fala(el, tlo) {                 // kolor rozlewa się kołem od głowy klienta
+  const r = el.getBoundingClientRect(), f = document.createElement('div');
+  f.className = 'fala'; f.style.background = tlo;
+  f.style.left = (r.left + r.width / 2) + 'px'; f.style.top = (r.top + r.height * .22) + 'px';
+  document.body.appendChild(f);
+  setTimeout(() => f.remove(), 850);
+}
+function nozyczki(el) {
+  const r = el.getBoundingClientRect(), s = document.createElement('div');
+  s.className = 'nozyczki'; s.textContent = '✂️';
+  s.style.left = (r.left + r.width / 2) + 'px'; s.style.top = (r.top + r.height * .25) + 'px';
+  document.body.appendChild(s);
+  [250, 500, 750].forEach(t => setTimeout(() => iskrySrodek(el, .25, ['✨', '💫'], 3, 9), t));
+  setTimeout(() => s.remove(), 1000);
+}
+function dmuch(el) {                     // suszarka dmucha: włosy falują, z robota lecą podmuchy
+  el.classList.add('dmucha');
+  const rb = $('robot').getBoundingClientRect();
+  for (let i = 0; i < 4; i++) setTimeout(() => iskry(rb.left + rb.width * .3, rb.top + rb.height * .5, ['💨'], 1, 8), i * 400);
+  setTimeout(() => {
+    el.classList.remove('dmucha'); podskok(el); Dzwiek.hop();
+    iskrySrodek(el, .25, ['😍', '💖', '✨'], 8, 14);
+  }, 2200);
+}
 
 // ---------- logika ekranów ----------
 const $ = id => document.getElementById(id);
@@ -502,7 +636,8 @@ function nowyKlient() {
   $('dalej').className = 'guzik';
   // wymuszenie reflow, żeby animacja wejścia ruszyła od początku
   void g.offsetWidth;
-  g.classList.add('wszedl');
+  g.classList.add('wszedl', 'idzie');
+  setTimeout(() => { g.classList.remove('idzie'); podskok(g); Dzwiek.hop(); }, 2300);
   setTimeout(() => {
     const zy = aktualnyKlient.zyczenie;
     const tekst = aktualnyKlient.tekst + ' Chcę ' + zy.nazwaKoloru + ' włosy i ' + zy.nazwaStylu + '!';
@@ -581,6 +716,7 @@ function prysznicRuch(e) {
     k.style.setProperty('--spadek', '40px');
     $('mycie').appendChild(k);
     setTimeout(() => k.remove(), 450);
+    if (Math.random() < 0.25) banka(e.clientX + Math.random() * 60 - 30, e.clientY);
   }
 
   if (!Dzwiek.petlaStart('prysznic', 0.6) && teraz - (prysznicRuch.dzwiek || 0) > 110) { prysznicRuch.dzwiek = teraz; Dzwiek.woda(); }
@@ -602,6 +738,8 @@ function prysznicRuch(e) {
     $('pasek').firstElementChild.style.width = '100%';
     $('czysto').style.display = 'block';
     Dzwiek.naprawa();
+    iskrySrodek($('mycieKlient'), .3, ['✨', '💧', '🫧', '💖'], 12, 18);
+    podskok($('mycieKlient'));
     $('dalejMycie').style.display = 'inline-block';
     myje = false;
     Dzwiek.petlaStop('prysznic');
@@ -631,6 +769,7 @@ function startFarbowanie() {
     .concat(SKLEP.filter(t => t.typ === 'kolor' && zapis.kupione.includes(t.id)).map(t => ({ kolor: t.kolor, tlo: t.tlo, spec: true })));
   wszystkie.forEach(({ kolor: k, tlo, spec }, i) => {
     const b = document.createElement('div');
+    b.style.setProperty('--i', i);
     b.className = 'kolor' + (spec ? ' spec' : ''); b.style.background = tlo;
     b.addEventListener('click', () => {
       o.kolor = k;
@@ -638,6 +777,9 @@ function startFarbowanie() {
       p.querySelectorAll('.kolor').forEach(x => x.classList.remove('wybrany'));
       b.classList.add('wybrany');
       Dzwiek.kolor(i);
+      fala($('farbaKlient'), tlo);
+      podskok($('farbaKlient'));
+      iskrySrodek($('farbaKlient'), .25, ['🎨', '✨', '💧'], 6, 12);
       stan.kolor = true;
       $('dalejFarba').style.display = 'inline-block';
     });
@@ -663,8 +805,9 @@ function startFryzura() {
   robotBzzt = setInterval(() => { if (naprawy < 3) Dzwiek.bzzt(); }, 1200);
   const box = $('opcjeFryzur');
   box.innerHTML = '';
-  STYLE.forEach(([id, nazwa]) => {
+  STYLE.forEach(([id, nazwa], i) => {
     const b = document.createElement('button');
+    b.style.setProperty('--i', i);
     b.className = 'opcja'; b.textContent = nazwa;
     b.addEventListener('click', () => {
       aktualnyKlient.opis.styl = id;
@@ -672,7 +815,8 @@ function startFryzura() {
       box.querySelectorAll('.opcja').forEach(x => x.classList.remove('wybrany'));
       b.classList.add('wybrany');
       Dzwiek.snip();
-      setTimeout(() => Dzwiek.suszarka(), 700);
+      nozyczki($('fryzuraKlient'));
+      setTimeout(() => { Dzwiek.suszarka(); dmuch($('fryzuraKlient')); }, 700);
       stan.fryzura = true;
       $('dalejFryzura').style.display = 'inline-block';
     });
@@ -683,11 +827,13 @@ $('robot').addEventListener('click', () => {
   if (naprawy >= 3) { Dzwiek.naprawa(); return; }
   naprawy++;
   Dzwiek.stuk();
+  iskrySrodek($('robot'), .4, ['🔧', '⚙️'], 3, 8);
   if (naprawy < 3) {
     $('robotNapis').textContent = '🔧 jeszcze ' + (3 - naprawy) + '...';
   } else {
     clearInterval(robotBzzt);
-    $('robot').className = '';
+    $('robot').className = 'tanczy';
+    iskrySrodek($('robot'), .4, ['⚙️', '✨', '⭐', '💖'], 12, 16);
     $('robotImg').src = IMG + 'robot-dziala.webp';
     $('robotNapis').textContent = '✨ działa! ✨';
     $('instrFryzura').textContent = 'Hura! Teraz wybierz fryzurę ✂️';
@@ -701,6 +847,7 @@ $('dalejFryzura').addEventListener('click', () => { clearInterval(robotBzzt); Dz
 // ---------- ekran 6: zadowolony klient, gwiazdki, fartuszek ----------
 function startKoniec() {
   malujKlienta($('koniecKlient'), aktualnyKlient.opis);
+  $('koniecKlient').classList.remove('tanczy'); $('koniecZosia').classList.remove('klaszcze');
   const gwiazdy = 1 + (stan.kolor ? 1 : 0) + (stan.fryzura ? 1 : 0) + (stan.robot ? 1 : 0);
   const sp = $('gwiazdki').children;
   [...sp].forEach(s => s.classList.remove('jest'));
@@ -723,6 +870,8 @@ function startKoniec() {
   $('napisKoniec').innerHTML = aktualnyKlient.imie + ': „Super! Dziękuję!” 😍 Zosia dostaje <b>nowy fartuszek</b>! 👗<br>Fryzura jedzie na <b>Konkurs Fryzur w Poznaniu</b> 🏆<br>' + (bonus ? '💝 Spełnione życzenie: ' + [trafKolor ? zy.nazwaKoloru : '', trafStyl ? zy.nazwaStylu : ''].filter(Boolean).join(' i ') + '! ' : 'Życzenie: ' + zy.nazwaKoloru + ', ' + zy.nazwaStylu + '. ') + 'Napiwek: <b>+' + zarobek + ' 🪙</b>';
   setTimeout(() => {
     Dzwiek.fanfara(); mow('Super! Dziękuję!');
+    $('koniecKlient').classList.add('tanczy'); $('koniecZosia').classList.add('klaszcze');
+    iskrySrodek($('koniecKlient'), .3, ['💖', '🪙', '⭐', '😍'], 14, 22);
     odswiezMonety(); $('monety').classList.remove('skok'); void $('monety').offsetWidth; $('monety').classList.add('skok');
   }, 500 + gwiazdy * 600);
   for (let i = 0; i < 14; i++) {
@@ -742,6 +891,35 @@ $('nastepny').addEventListener('click', () => {
 $('sklepStart').addEventListener('click', () => { Dzwiek.odblokuj(); Dzwiek.klik(); otworzSklep('start'); });
 $('sklepikBtn').addEventListener('click', () => { Dzwiek.klik(); otworzSklep('koniec'); });
 $('wrocSklep').addEventListener('click', () => { Dzwiek.klik(); pokaz(sklepWroc); });
+// dotknięcie klienta albo Zosi = podskok i iskry
+document.querySelectorAll('.klient').forEach(k => {
+  if (k.id === 'mycieKlient') return;          // tam przeciąga się prysznic
+  k.addEventListener('click', () => { podskok(k); Dzwiek.hop(); iskrySrodek(k, .25, ['😆', '💖', '✨'], 5, 10); });
+});
+document.querySelectorAll('.zosia-s, #start .zosia').forEach(z => {
+  z.addEventListener('click', () => { podskok(z); Dzwiek.hop(); iskrySrodek(z, .3, ['💖', '✨'], 5, 10); });
+});
+// żywy salon: ptaki i chmury w oknie, blask lamp, sekundnik zegara
+document.querySelectorAll('.salon').forEach(s => {
+  s.querySelector('.salon-tlo').insertAdjacentHTML('afterend',
+    '<div class="okno"><span class="chmura" style="top:5%;animation-delay:-3s">☁️</span><span class="chmura" style="top:45%;animation-duration:28s;animation-delay:-14s">☁️</span>' +
+    '<span style="top:20%;animation-delay:-1s">🐦</span><span style="top:55%;animation-duration:7s;animation-delay:-5s">🕊️</span></div>' +
+    '<div class="lampa" style="left:24.8%"></div><div class="lampa" style="left:75.3%;animation-delay:-1.2s"></div><div class="zegar"></div>');
+});
+// co chwilę: bańki nad głową w myciu, iskry z zepsutego robota, kot sam podskakuje
+setInterval(() => {
+  if (document.hidden) return;
+  const a = document.querySelector('.ekran.aktywny'); if (!a) return;
+  if (a.id === 'mycie' && $('czysto').style.display !== 'block') {
+    const r = $('piana').getBoundingClientRect();
+    banka(r.left + r.width * (.3 + Math.random() * .4), r.top + r.height * (.15 + Math.random() * .15));
+  }
+  if (a.id === 'fryzura' && $('robot').classList.contains('zepsuty')) iskrySrodek($('robot'), .4, ['⚡', '✨'], 2, 6);
+  if ((a.id === 'klient' || a.id === 'koniec') && Math.random() < .2) {
+    const k = a.querySelector('.kot');
+    if (k) { k.classList.add('skok'); setTimeout(() => k.classList.remove('skok'), 550); }
+  }
+}, 800);
 odswiezMonety(); odswiezKota();
 if ('serviceWorker' in navigator) {   // PWA: działa offline po pierwszym wejściu
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
